@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { normalize } from '@/lib/search'
 
 interface Category {
@@ -366,9 +368,14 @@ export default function NoteEditor({ categories, initialNote, initialType = 'SIG
         </div>
 
         {preview ? (
-          <div className="p-5 prose prose-green max-w-none min-h-[200px]">
+          <div className="p-5 prose max-w-none min-h-[200px]">
             {content ? (
-              <div dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, '<br>') }} />
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {content.replace(/\[\[([^\]]+)\]\]/g, (_, inner) => {
+                  const [target, alias] = String(inner).split('|')
+                  return `[${(alias || target).trim()}](/signes/${autoSlug(target.trim())})`
+                })}
+              </ReactMarkdown>
             ) : (
               <p className="text-gray-400 italic">Aucun contenu.</p>
             )}

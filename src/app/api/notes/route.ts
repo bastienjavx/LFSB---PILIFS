@@ -10,11 +10,19 @@ export async function GET(req: NextRequest) {
   const category = searchParams.get('category') || undefined
   const published = searchParams.get('published')
 
+  // Seul un admin connecté peut voir les brouillons : sinon on force `published`.
+  const session = await getServerSession(authOptions)
+  const publishedFilter = session
+    ? published !== null
+      ? { published: published === 'true' }
+      : {}
+    : { published: true }
+
   const notes = await prisma.note.findMany({
     where: {
       ...(type ? { type: type as 'SIGN' | 'INFORMATION' | 'PAGE' } : {}),
       ...(category ? { category: { slug: category } } : {}),
-      ...(published !== null ? { published: published === 'true' } : {}),
+      ...publishedFilter,
     },
     orderBy: { updatedAt: 'desc' },
     include: { category: true, media: { take: 1 } },

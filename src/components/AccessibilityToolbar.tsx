@@ -1,14 +1,16 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AccessibilityIcon, HandIcon, GlobeIcon } from '@/components/icons'
 
 type TextSize = 'small' | 'normal' | 'large' | 'xlarge'
 type Contrast = 'normal' | 'dark' | 'high'
+type Reading = 'normal' | 'comfortable'
 
 interface State {
   textSize: TextSize
   contrast: Contrast
+  reading: Reading
   simple: boolean
   highlightLinks: boolean
 }
@@ -18,6 +20,7 @@ const storageKey = 'main-verte-a11y'
 const defaultState: State = {
   textSize: 'normal',
   contrast: 'normal',
+  reading: 'normal',
   simple: false,
   highlightLinks: false,
 }
@@ -27,6 +30,7 @@ const textSizes: TextSize[] = ['small', 'normal', 'large', 'xlarge']
 export default function AccessibilityToolbar() {
   const [state, setState] = useState<State>(defaultState)
   const [open, setOpen] = useState(false)
+  const panelRef = useRef<HTMLElement>(null)
 
   // Charge les préférences enregistrées
   useEffect(() => {
@@ -49,12 +53,25 @@ export default function AccessibilityToolbar() {
     root.setAttribute('data-text-size', state.textSize)
     if (state.contrast === 'normal') root.removeAttribute('data-contrast')
     else root.setAttribute('data-contrast', state.contrast)
+    if (state.reading === 'comfortable') root.setAttribute('data-reading', 'comfortable')
+    else root.removeAttribute('data-reading')
     if (state.simple) root.setAttribute('data-simple', 'true')
     else root.removeAttribute('data-simple')
     if (state.highlightLinks) root.setAttribute('data-highlight-links', 'true')
     else root.removeAttribute('data-highlight-links')
     window.localStorage.setItem(storageKey, JSON.stringify(state))
   }, [state])
+
+  // Échap ferme la barre ; à l'ouverture, le focus entre dans la barre.
+  useEffect(() => {
+    if (!open) return
+    panelRef.current?.focus()
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open])
 
   const set = <K extends keyof State>(key: K, value: State[K]) =>
     setState((s) => ({ ...s, [key]: value }))
@@ -70,7 +87,9 @@ export default function AccessibilityToolbar() {
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-2 pb-2 sm:px-4 sm:pb-4">
       <aside
-        className="a11y-bar pointer-events-auto"
+        ref={panelRef}
+        tabIndex={-1}
+        className="a11y-bar pointer-events-auto focus:outline-none"
         aria-label="Options d'accessibilité"
       >
         {/* Intitulé */}
@@ -147,6 +166,20 @@ export default function AccessibilityToolbar() {
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Lecture confortable */}
+        <div className="a11y-group">
+          <span className="a11y-group__label">Lecture facile</span>
+          <button
+            type="button"
+            className="a11y-toggle"
+            aria-pressed={state.reading === 'comfortable'}
+            onClick={() => set('reading', state.reading === 'comfortable' ? 'normal' : 'comfortable')}
+            aria-label="Activer la lecture facile (police lisible et texte aéré)"
+          >
+            <span className="a11y-toggle__knob" />
+          </button>
         </div>
 
         {/* Mode simple */}

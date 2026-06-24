@@ -42,6 +42,10 @@ model Note {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 
+  // NB: la colonne générée `searchVector` (tsvector) + son index GIN sont gérés
+  // hors-Prisma par la migration `20260624000000_fulltext_search` et interrogés
+  // via $queryRaw (src/lib/search-db.ts). Ne pas la déclarer ici (elle est
+  // GENERATED ALWAYS, non supportée par Prisma).
   @@index([slug])
   @@index([categoryId])
   @@index([published])

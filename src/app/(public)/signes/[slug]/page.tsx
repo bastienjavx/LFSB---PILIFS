@@ -9,7 +9,6 @@ import type { Metadata } from 'next'
 import { CategoryGlyph, HomeIcon } from '@/components/icons'
 import { findBacklinks } from '@/lib/utils'
 
-export const revalidate = 60
 export const dynamic = 'force-dynamic'
 
 interface Props {

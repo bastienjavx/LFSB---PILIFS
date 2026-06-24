@@ -45,8 +45,11 @@
     @apply box-border;
   }
 
+  /* Accessibilité : le contour clavier doit toujours rester visible.
+     Le `!important` empêche les `focus:outline-none` des composants de
+     masquer l'indicateur de focus (WCAG 2.4.7). */
   :focus-visible {
-    outline: 3px solid var(--focus);
+    outline: 3px solid var(--focus) !important;
     outline-offset: 3px;
     border-radius: 4px;
   }
@@ -155,6 +158,31 @@
   }
 }
 
+/* ---------- Contenu Markdown (Tailwind Typography) ----------
+   On pilote les couleurs via les variables `--tw-prose-*` pour que le
+   contenu des fiches reste lisible dans TOUS les modes (sombre, contraste). */
+.prose {
+  color: var(--ink-soft);
+  --tw-prose-body: var(--ink-soft);
+  --tw-prose-headings: var(--ink);
+  --tw-prose-bold: var(--ink);
+  --tw-prose-links: var(--brand-700);
+  --tw-prose-quotes: var(--ink-soft);
+  --tw-prose-quote-borders: var(--brand-300);
+  --tw-prose-bullets: var(--brand-600);
+  --tw-prose-counters: var(--muted);
+  --tw-prose-hr: var(--border);
+  --tw-prose-code: var(--ink);
+  --tw-prose-th-borders: var(--border-strong);
+  --tw-prose-td-borders: var(--border);
+}
+
+.prose a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 700;
+}
+
 /* ---------- Modes d'accessibilité ---------- */
 
 /* Taille du texte */
@@ -225,6 +253,20 @@ html[data-contrast='high'][data-highlight-links='true'] a:not(.no-highlight) {
   background: transparent;
   color: inherit;
   box-shadow: none;
+}
+
+/* Lecture confortable : police plus lisible + espacement aéré
+   (recommandé pour la dyslexie et les personnes qui lisent peu). */
+html[data-reading='comfortable'] body {
+  font-family: Verdana, "Atkinson Hyperlegible", "Segoe UI", Tahoma, sans-serif;
+  letter-spacing: 0.03em;
+  word-spacing: 0.08em;
+}
+
+html[data-reading='comfortable'] p,
+html[data-reading='comfortable'] li {
+  line-height: 2;
+  max-width: 62ch;
 }
 
 /* Mode simple : masque le décoratif et aère la lecture */

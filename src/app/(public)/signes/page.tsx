@@ -1,38 +1,70 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { NoteType } from '@prisma/client'
+import { NoteType, Prisma } from '@prisma/client'
 import type { Metadata } from 'next'
 import { SearchIcon, HandIcon, CategoryGlyph } from '@/components/icons'
 import { smartSearch } from '@/lib/search'
+import { searchSignIds } from '@/lib/search-db'
 
 export const metadata: Metadata = { title: 'Tous les signes' }
-export const revalidate = 60
 export const dynamic = 'force-dynamic'
 
 interface Props {
   searchParams: { categorie?: string; q?: string }
 }
 
+const SIGN_INCLUDE = {
+  category: true,
+  media: { where: { type: { in: ['IMAGE', 'GIF', 'VIDEO'] } }, take: 1 },
+} satisfies Prisma.NoteInclude
+
 async function getData(categorie?: string, q?: string) {
   try {
-    const [categories, allNotes] = await Promise.all([
-      prisma.category.findMany({ orderBy: { order: 'asc' } }),
-      prisma.note.findMany({
-        where: {
-          published: true,
-          type: NoteType.SIGN,
-          ...(categorie ? { category: { slug: categorie } } : {}),
-        },
-        orderBy: { title: 'asc' },
-        include: {
-          category: true,
-          media: { where: { type: { in: ['IMAGE', 'GIF', 'VIDEO'] } }, take: 1 },
-        },
-      }),
-    ])
+    const categories = await prisma.category.findMany({ orderBy: { order: 'asc' } })
+    const query = q?.trim()
 
-    // Recherche intelligente (pertinence) côté serveur quand une requête existe.
-    const notes = q && q.trim() ? smartSearch(q, allNotes).map((h) => h.item) : allNotes
+    const baseWhere = {
+      published: true,
+      type: NoteType.SIGN,
+      ...(categorie ? { category: { slug: categorie } } : {}),
+    }
+
+    if (query) {
+      // 1) Recherche plein-texte PostgreSQL : rapide, indexée (GIN), insensible
+      //    aux accents, avec stemming et pondération du ranking.
+      let ids: string[] = []
+      try {
+        ids = await searchSignIds(query, categorie)
+      } catch {
+        ids = [] // ex: migration pas encore appliquée → on bascule sur le repli.
+      }
+
+      if (ids.length > 0) {
+        const found = await prisma.note.findMany({
+          where: { id: { in: ids } },
+          include: SIGN_INCLUDE,
+        })
+        const rank = new Map(ids.map((id, i) => [id, i]))
+        found.sort((a, b) => (rank.get(a.id) ?? 0) - (rank.get(b.id) ?? 0))
+        return { categories, notes: found }
+      }
+
+      // 2) Repli tolérant aux fautes de frappe et aux synonymes quand le
+      //    plein-texte ne renvoie rien (utile pour notre public).
+      const allNotes = await prisma.note.findMany({
+        where: baseWhere,
+        orderBy: { title: 'asc' },
+        include: SIGN_INCLUDE,
+      })
+      return { categories, notes: smartSearch(query, allNotes).map((h) => h.item) }
+    }
+
+    // Pas de recherche : liste complète (éventuellement filtrée par catégorie).
+    const notes = await prisma.note.findMany({
+      where: baseWhere,
+      orderBy: { title: 'asc' },
+      include: SIGN_INCLUDE,
+    })
     return { categories, notes }
   } catch {
     return { categories: [], notes: [] }

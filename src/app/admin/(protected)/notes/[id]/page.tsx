@@ -4,6 +4,8 @@ import NoteEditor from '@/components/NoteEditor'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic'
+
 interface Props {
   params: { id: string }
 }

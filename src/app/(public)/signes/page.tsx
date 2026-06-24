@@ -7,6 +7,7 @@ import { smartSearch } from '@/lib/search'
 
 export const metadata: Metadata = { title: 'Tous les signes' }
 export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 interface Props {
   searchParams: { categorie?: string; q?: string }

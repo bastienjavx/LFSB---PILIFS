@@ -9,6 +9,7 @@ import { HomeIcon, InfoIcon } from '@/components/icons'
 
 export const metadata: Metadata = { title: 'Le projet' }
 export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 async function getInformationPages() {
   // La DB n'est pas joignable pendant le build (Railway/Docker) : on renvoie

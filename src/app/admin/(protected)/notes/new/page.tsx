@@ -3,6 +3,7 @@ import NoteEditor from '@/components/NoteEditor'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Nouvelle note | Admin' }
+export const dynamic = 'force-dynamic'
 
 interface Props {
   searchParams: { type?: string }

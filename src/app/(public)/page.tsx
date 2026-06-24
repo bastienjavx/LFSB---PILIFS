@@ -14,6 +14,7 @@ import {
 } from '@/components/icons'
 
 export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 const fallbackCategories = [
   { id: 'c1', name: 'Personnes', slug: 'personnes', icon: 'icon:people', color: '#246b3d', order: 1, _count: { notes: 0 } },

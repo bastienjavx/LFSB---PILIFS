@@ -10,6 +10,7 @@ import { CategoryGlyph, HomeIcon } from '@/components/icons'
 import { findBacklinks } from '@/lib/utils'
 
 export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 interface Props {
   params: { slug: string }
@@ -22,17 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-  // La base de données n'est pas joignable pendant le build (Railway/Docker).
-  // On génère les pages à la demande (ISR via `revalidate`) plutôt qu'au build.
-  try {
-    const notes = await prisma.note.findMany({
-      where: { published: true },
-      select: { slug: true },
-    })
-    return notes.map((n) => ({ slug: n.slug }))
-  } catch {
-    return []
-  }
+  return []
 }
 
 export default async function SignePage({ params }: Props) {

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Tableau de bord | Admin' }
+export const dynamic = 'force-dynamic'
 
 export default async function AdminDashboard() {
   const [noteCount, publishedCount, categoryCount, mediaCount, recentNotes] = await Promise.all([

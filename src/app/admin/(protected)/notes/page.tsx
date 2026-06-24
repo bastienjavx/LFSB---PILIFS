@@ -3,6 +3,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'Notes | Admin' }
+export const dynamic = 'force-dynamic'
 
 interface Props {
   searchParams: { type?: string; q?: string; categorie?: string }

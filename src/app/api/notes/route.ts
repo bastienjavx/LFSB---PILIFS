@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { toSlug } from '@/lib/utils'
+import { NoteType } from '@prisma/client'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -20,7 +21,7 @@ export async function GET(req: NextRequest) {
 
   const notes = await prisma.note.findMany({
     where: {
-      ...(type ? { type: type as 'SIGN' | 'INFORMATION' | 'PAGE' } : {}),
+      ...(type ? { type: type as NoteType } : {}),
       ...(category ? { category: { slug: category } } : {}),
       ...publishedFilter,
     },

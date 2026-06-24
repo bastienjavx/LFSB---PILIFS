@@ -6,7 +6,10 @@ import { signOut, useSession } from 'next-auth/react'
 
 const links = [
   { href: '/admin', label: 'Tableau de bord', icon: '📊', exact: true },
-  { href: '/admin/notes', label: 'Notes & Signes', icon: '📝' },
+  { href: '/admin/notes', label: 'Notes & contenus', icon: '📝' },
+  { href: '/admin/notes?type=BLOG', label: 'Blog', icon: '📰' },
+  { href: '/admin/notes?type=TRAINING', label: 'Formations', icon: '🎓' },
+  { href: '/admin/notes?type=GUIDE', label: 'Guides', icon: '🧭' },
   { href: '/admin/categories', label: 'Catégories', icon: '🗂️' },
   { href: '/admin/media', label: 'Médias', icon: '🖼️' },
   { href: '/admin/import', label: 'Import Obsidian', icon: '📥' },

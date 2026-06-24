@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { normalize } from '@/lib/search'
+import { NOTE_TYPE_ICONS, NOTE_TYPE_LABELS, publicHrefForType } from '@/lib/content-types'
 
 interface Category {
   id: string
@@ -58,6 +59,7 @@ export default function NoteEditor({ categories, initialNote, initialType = 'SIG
   const [media, setMedia] = useState<Media[]>(initialNote?.media || [])
   const [uploading, setUploading] = useState(false)
   const [slugManual, setSlugManual] = useState(isEdit)
+  const publicPath = publicHrefForType(type, slug || 'slug')
 
   // Autocomplétion des liens internes [[...]] (façon Obsidian).
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -231,7 +233,7 @@ export default function NoteEditor({ categories, initialNote, initialType = 'SIG
             Slug (URL)
           </label>
           <div className="flex gap-2">
-            <span className="text-gray-400 text-sm flex items-center">/signes/</span>
+            <span className="text-gray-400 text-sm flex items-center">{publicPath.replace(/slug$/, '')}</span>
             <input
               id="slug"
               type="text"
@@ -262,9 +264,11 @@ export default function NoteEditor({ categories, initialNote, initialType = 'SIG
         <div>
           <label htmlFor="type" className="block text-sm font-medium text-gray-700 mb-1">Type</label>
           <select id="type" value={type} onChange={(e) => setType(e.target.value)} className="input-field">
-            <option value="SIGN">👐 Signe LFSB</option>
-            <option value="INFORMATION">📖 Information</option>
-            <option value="PAGE">📄 Page</option>
+            {Object.entries(NOTE_TYPE_LABELS).map(([value, label]) => (
+              <option key={value} value={value}>
+                {NOTE_TYPE_ICONS[value as keyof typeof NOTE_TYPE_ICONS]} {label}
+              </option>
+            ))}
           </select>
         </div>
         <div>

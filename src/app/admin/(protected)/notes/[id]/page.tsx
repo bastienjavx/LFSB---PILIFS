@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import NoteEditor from '@/components/NoteEditor'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { publicHrefForType } from '@/lib/content-types'
 
 export const dynamic = 'force-dynamic'
 
@@ -44,7 +45,7 @@ export default async function EditNotePage({ params }: Props) {
         </div>
         {note.published && (
           <Link
-            href={`/signes/${note.slug}`}
+            href={publicHrefForType(note.type, note.slug)}
             target="_blank"
             className="btn-secondary flex items-center gap-2 text-sm"
           >

@@ -16,7 +16,7 @@ export default async function NewNotePage({ searchParams }: Props) {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Nouvelle note</h1>
-        <p className="text-gray-500 mt-1">Créer un nouveau signe ou une page d'information</p>
+        <p className="text-gray-500 mt-1">Créer un signe, un article, un module de formation ou un guide</p>
       </div>
       <NoteEditor
         categories={categories.map((c) => ({ ...c, icon: c.icon ?? null }))}

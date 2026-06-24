@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import { NoteType } from '@prisma/client'
+import { NOTE_TYPE_ICONS, NOTE_TYPE_LABELS, publicHrefForType } from '@/lib/content-types'
 
 export const metadata: Metadata = { title: 'Notes | Admin' }
 export const dynamic = 'force-dynamic'
@@ -15,7 +17,7 @@ export default async function AdminNotesPage({ searchParams }: Props) {
   const [notes, categories] = await Promise.all([
     prisma.note.findMany({
       where: {
-        ...(type ? { type: type as 'SIGN' | 'INFORMATION' | 'PAGE' } : {}),
+        ...(type ? { type: type as NoteType } : {}),
         ...(categorie ? { category: { slug: categorie } } : {}),
         ...(q
           ? { OR: [{ title: { contains: q, mode: 'insensitive' } }] }
@@ -30,7 +32,7 @@ export default async function AdminNotesPage({ searchParams }: Props) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Notes & Signes</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Notes & contenus</h1>
         <Link href="/admin/notes/new" className="btn-primary flex items-center gap-2">
           <span aria-hidden>➕</span> Nouveau
         </Link>
@@ -47,9 +49,11 @@ export default async function AdminNotesPage({ searchParams }: Props) {
         />
         <select name="type" defaultValue={type || ''} className="input-field max-w-xs">
           <option value="">Tous les types</option>
-          <option value="SIGN">Signes LFSB</option>
-          <option value="INFORMATION">Informations</option>
-          <option value="PAGE">Pages</option>
+          {Object.entries(NOTE_TYPE_LABELS).map(([value, label]) => (
+            <option key={value} value={value}>
+              {NOTE_TYPE_ICONS[value as keyof typeof NOTE_TYPE_ICONS]} {label}
+            </option>
+          ))}
         </select>
         <select name="categorie" defaultValue={categorie || ''} className="input-field max-w-xs">
           <option value="">Toutes les catégories</option>
@@ -103,7 +107,7 @@ export default async function AdminNotesPage({ searchParams }: Props) {
                       />
                     ) : (
                       <span className="text-lg" aria-hidden>
-                        {note.category?.icon || (note.type === 'SIGN' ? '👐' : '📄')}
+                        {note.category?.icon || NOTE_TYPE_ICONS[note.type]}
                       </span>
                     )}
                   </td>
@@ -115,7 +119,9 @@ export default async function AdminNotesPage({ searchParams }: Props) {
                     {note.category ? `${note.category.icon} ${note.category.name}` : <span className="text-gray-300">—</span>}
                   </td>
                   <td className="px-4 py-3 hidden lg:table-cell">
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{note.type}</span>
+                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                      {NOTE_TYPE_ICONS[note.type]} {NOTE_TYPE_LABELS[note.type]}
+                    </span>
                   </td>
                   <td className="px-4 py-3">
                     <span
@@ -138,7 +144,7 @@ export default async function AdminNotesPage({ searchParams }: Props) {
                         Éditer
                       </Link>
                       <Link
-                        href={`/signes/${note.slug}`}
+                        href={publicHrefForType(note.type, note.slug)}
                         target="_blank"
                         className="text-gray-400 hover:text-gray-600 text-sm"
                         aria-label={`Voir ${note.title} sur le site`}

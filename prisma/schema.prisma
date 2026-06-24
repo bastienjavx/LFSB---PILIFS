@@ -97,6 +97,9 @@ enum NoteType {
   SIGN
   INFORMATION
   PAGE
+  BLOG
+  TRAINING
+  GUIDE
 }
 
 enum MediaType {

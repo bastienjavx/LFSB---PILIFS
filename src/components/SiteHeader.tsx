@@ -13,6 +13,10 @@ import {
 const links = [
   { href: '/', label: 'Accueil', Icon: HomeIcon, exact: true },
   { href: '/signes', label: 'Signes', Icon: HandIcon },
+  { href: '/cartes', label: 'Cartes', Icon: HandIcon },
+  { href: '/blog', label: 'Blog', Icon: InfoIcon },
+  { href: '/formations', label: 'Formations', Icon: InfoIcon },
+  { href: '/guides', label: 'Guides', Icon: InfoIcon },
   { href: '/information', label: 'Projet', Icon: InfoIcon },
   { href: '/admin', label: 'Administration', Icon: AdminIcon },
 ]

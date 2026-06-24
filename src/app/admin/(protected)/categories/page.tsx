@@ -28,6 +28,8 @@ export default function CategoriesPage() {
   const [editing, setEditing] = useState<string | null>(null)
   const [creating, setCreating] = useState(false)
   const [form, setForm] = useState<Form>(emptyForm)
+  const [draggedId, setDraggedId] = useState<string | null>(null)
+  const [savingOrder, setSavingOrder] = useState(false)
 
   const load = useCallback(async () => {
     const res = await fetch('/api/categories')
@@ -53,6 +55,40 @@ export default function CategoriesPage() {
     if (!confirm(`Supprimer la catégorie "${name}" ?\nLes notes ne seront pas supprimées.`)) return
     const res = await fetch(`/api/categories/${id}`, { method: 'DELETE' })
     if (res.ok) load()
+  }
+
+  async function persistOrder(nextCategories: Category[]) {
+    setSavingOrder(true)
+    const res = await fetch('/api/categories/reorder', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: nextCategories.map((cat) => cat.id) }),
+    })
+    setSavingOrder(false)
+    if (!res.ok) load()
+  }
+
+  function moveCategory(fromId: string, toId: string) {
+    if (fromId === toId) return categories
+    const from = categories.findIndex((cat) => cat.id === fromId)
+    const to = categories.findIndex((cat) => cat.id === toId)
+    if (from < 0 || to < 0) return categories
+    const next = [...categories]
+    const [item] = next.splice(from, 1)
+    next.splice(to, 0, item)
+    setCategories(next)
+    return next
+  }
+
+  function moveByStep(id: string, direction: -1 | 1) {
+    const index = categories.findIndex((cat) => cat.id === id)
+    const nextIndex = index + direction
+    if (index < 0 || nextIndex < 0 || nextIndex >= categories.length) return
+    const next = [...categories]
+    const [item] = next.splice(index, 1)
+    next.splice(nextIndex, 0, item)
+    setCategories(next)
+    persistOrder(next)
   }
 
   function startEdit(cat: Category) {
@@ -90,14 +126,31 @@ export default function CategoriesPage() {
         <div className="py-8 text-center text-gray-400">Chargement…</div>
       ) : (
         <div className="space-y-2">
-          {categories.map((cat) => (
+            {categories.map((cat, index) => (
             <div key={cat.id}>
               {editing === cat.id ? (
                 <div className="rounded-2xl border-2 border-green-200 bg-white p-5 shadow-sm">
                   <CategoryForm form={form} setForm={setForm} onSave={handleSave} onCancel={() => setEditing(null)} isEdit />
                 </div>
               ) : (
-                <div className="flex items-center gap-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
+                <div
+                  draggable
+                  onDragStart={() => setDraggedId(cat.id)}
+                  onDragOver={(e) => {
+                    e.preventDefault()
+                    if (draggedId) moveCategory(draggedId, cat.id)
+                  }}
+                  onDragEnd={() => {
+                    if (draggedId) persistOrder(categories)
+                    setDraggedId(null)
+                  }}
+                  className={`flex items-center gap-4 rounded-2xl border bg-white p-4 shadow-sm transition ${
+                    draggedId === cat.id ? 'border-green-300 opacity-70' : 'border-gray-100'
+                  }`}
+                >
+                  <div className="flex shrink-0 cursor-grab flex-col items-center gap-1 text-gray-300 active:cursor-grabbing" aria-hidden>
+                    <span className="leading-none">⋮⋮</span>
+                  </div>
                   <div
                     className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl"
                     style={{ backgroundColor: cat.color + '1a', color: cat.color }}
@@ -110,6 +163,24 @@ export default function CategoriesPage() {
                     <div className="text-xs text-gray-400">/{cat.slug} · {cat._count?.notes || 0} note{(cat._count?.notes || 0) !== 1 ? 's' : ''}</div>
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => moveByStep(cat.id, -1)}
+                      disabled={index === 0 || savingOrder}
+                      className="text-sm font-bold text-gray-500 hover:text-green-700 disabled:opacity-30"
+                      aria-label={`Monter ${cat.name}`}
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => moveByStep(cat.id, 1)}
+                      disabled={index === categories.length - 1 || savingOrder}
+                      className="text-sm font-bold text-gray-500 hover:text-green-700 disabled:opacity-30"
+                      aria-label={`Descendre ${cat.name}`}
+                    >
+                      ↓
+                    </button>
                     <button onClick={() => startEdit(cat)} className="text-sm font-bold text-green-700 hover:underline">Éditer</button>
                     <button onClick={() => handleDelete(cat.id, cat.name)} className="text-sm font-bold text-red-500 hover:underline">Supprimer</button>
                   </div>

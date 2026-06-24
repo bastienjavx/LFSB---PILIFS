@@ -80,7 +80,7 @@ export default function CategoriesPage() {
       </div>
 
       {creating && (
-        <div className="rounded-2xl border-2 border-blue-200 bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border-2 border-green-200 bg-white p-5 shadow-sm">
           <h2 className="mb-4 font-bold text-gray-800">Nouvelle catégorie</h2>
           <CategoryForm form={form} setForm={setForm} onSave={handleSave} onCancel={() => { setCreating(false); setEditing(null) }} />
         </div>
@@ -93,7 +93,7 @@ export default function CategoriesPage() {
           {categories.map((cat) => (
             <div key={cat.id}>
               {editing === cat.id ? (
-                <div className="rounded-2xl border-2 border-blue-200 bg-white p-5 shadow-sm">
+                <div className="rounded-2xl border-2 border-green-200 bg-white p-5 shadow-sm">
                   <CategoryForm form={form} setForm={setForm} onSave={handleSave} onCancel={() => setEditing(null)} isEdit />
                 </div>
               ) : (
@@ -110,7 +110,7 @@ export default function CategoriesPage() {
                     <div className="text-xs text-gray-400">/{cat.slug} · {cat._count?.notes || 0} note{(cat._count?.notes || 0) !== 1 ? 's' : ''}</div>
                   </div>
                   <div className="flex shrink-0 items-center gap-3">
-                    <button onClick={() => startEdit(cat)} className="text-sm font-bold text-blue-700 hover:underline">Éditer</button>
+                    <button onClick={() => startEdit(cat)} className="text-sm font-bold text-green-700 hover:underline">Éditer</button>
                     <button onClick={() => handleDelete(cat.id, cat.name)} className="text-sm font-bold text-red-500 hover:underline">Supprimer</button>
                   </div>
                 </div>

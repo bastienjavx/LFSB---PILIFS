@@ -106,7 +106,7 @@ export default async function SignePage({ params }: Props) {
                 controls
                 playsInline
                 className="w-full h-full"
-                aria-label={`Vidéo du signe LFSB: ${note.title}`}
+                aria-label={`Vidéo du signe Main Verte: ${note.title}`}
                 poster={images[0]?.url}
               >
                 <track kind="captions" label="Sous-titres français" srcLang="fr" />
@@ -117,7 +117,7 @@ export default async function SignePage({ params }: Props) {
             <div className="overflow-hidden rounded-2xl shadow-lg">
               <img
                 src={images[0].url}
-                alt={images[0].alt || `Signe LFSB: ${note.title}`}
+                alt={images[0].alt || `Signe Main Verte: ${note.title}`}
                 className="w-full bg-[var(--brand-soft)] object-contain"
               />
             </div>
@@ -162,7 +162,7 @@ export default async function SignePage({ params }: Props) {
           )}
 
           {note.content && (
-            <div className="prose prose-blue max-w-none text-[var(--ink-soft)]">
+            <div className="prose prose-green max-w-none text-[var(--ink-soft)]">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {parsedContent}
               </ReactMarkdown>

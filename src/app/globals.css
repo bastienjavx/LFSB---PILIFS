@@ -3,26 +3,28 @@
 @tailwind utilities;
 
 :root {
-  /* Palette PILIFS LFSB */
-  --brand: #1d4ed8;
-  --brand-200: #bfdbfe;
-  --brand-300: #93c5fd;
-  --brand-600: #2563eb;
-  --brand-700: #1d4ed8;
-  --brand-800: #1e40af;
-  --brand-900: #1e3a8a;
-  --brand-soft: #eff6ff;
-  --teal: #0d9488;
+  /* Main Verte — Ferme Nos Pilifs */
+  --brand: #246b3d;
+  --brand-200: #cfe8cf;
+  --brand-300: #9bd29e;
+  --brand-600: #2f7d45;
+  --brand-700: #246b3d;
+  --brand-800: #195330;
+  --brand-900: #123d2a;
+  --brand-soft: #eef8ed;
+  --leaf: #7bc96f;
+  --harvest: #e9b949;
+  --sky: #a7d8f0;
 
-  --page-bg: #f8fafc;
+  --page-bg: #f7faf3;
   --surface: #ffffff;
-  --surface-alt: #f1f5f9;
-  --ink: #0f172a;
-  --ink-soft: #334155;
-  --muted: #64748b;
-  --border: #e2e8f0;
-  --border-strong: #cbd5e1;
-  --focus: #1d4ed8;
+  --surface-alt: #eff5e9;
+  --ink: #17231b;
+  --ink-soft: #38513e;
+  --muted: #657566;
+  --border: #dbe7d8;
+  --border-strong: #bfd0bb;
+  --focus: #246b3d;
 
   --text-scale: 1;
 }
@@ -50,8 +52,8 @@
   }
 
   ::selection {
-    background: #bfdbfe;
-    color: #0f172a;
+    background: #dcefcf;
+    color: #17231b;
   }
 }
 
@@ -98,7 +100,7 @@
   }
 
   .brand-mark {
-    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 text-2xl text-white shadow-sm;
+    @apply flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] shadow-sm;
   }
 
   /* Tuiles catégories / ressources */
@@ -171,7 +173,7 @@ html[data-contrast='dark'] {
   --border: #2a3a5a;
   --border-strong: #3b4f78;
   --brand-soft: #1e293b;
-  --focus: #93c5fd;
+  --focus: #9bd29e;
 }
 
 /* Contraste élevé (jaune sur noir) */

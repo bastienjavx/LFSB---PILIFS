@@ -38,6 +38,57 @@ export function HandIcon(props: IconProps) {
   )
 }
 
+export function MainVerteLogo(props: IconProps) {
+  return (
+    <svg
+      width={40}
+      height={40}
+      viewBox="0 0 64 64"
+      fill="none"
+      aria-hidden
+      {...props}
+    >
+      <rect width="64" height="64" rx="18" fill="#123D2A" />
+      <path
+        d="M43.5 12.5c-9.6 1.1-16 6.9-18 15.1 6.6.8 14.6-1.8 18.3-8.5 1.1-2 1.5-4.3-.3-6.6Z"
+        fill="#7BC96F"
+      />
+      <path
+        d="M26.2 30.8c4.8-1.9 9.5-5.2 13.7-10.1"
+        stroke="#123D2A"
+        strokeWidth="2.4"
+        strokeLinecap="round"
+      />
+      <path
+        d="M18.4 31.6V21.4a4.1 4.1 0 0 1 8.2 0v8.3"
+        stroke="#F8F4E8"
+        strokeWidth="4.2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M26.6 29.7V18.1a4.1 4.1 0 0 1 8.2 0v12.2"
+        stroke="#F8F4E8"
+        strokeWidth="4.2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M34.8 31.4v-8.7a4.1 4.1 0 0 1 8.2 0v14.1c0 8.4-5.9 14.2-14.1 14.2h-3.2c-5.2 0-8.3-1.9-11.2-4.8l-4.3-4.3a4 4 0 0 1 5.6-5.7l4.3 4.1"
+        stroke="#F8F4E8"
+        strokeWidth="4.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M20 47.5c5.8-2.1 12.6-2.3 19.1-.6M24.8 53.1c4.2-1.4 8.6-1.5 12.7-.4"
+        stroke="#E9B949"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+      <circle cx="48.2" cy="15.6" r="4" fill="#E9B949" />
+    </svg>
+  )
+}
+
 export function InfoIcon(props: IconProps) {
   return (
     <svg {...base(props)}>

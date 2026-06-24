@@ -19,9 +19,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <aside className="w-64 bg-white border-r border-gray-200 flex flex-col fixed h-full z-40 shadow-sm">
           <div className="p-4 border-b border-gray-100">
             <Link href="/" className="flex items-center gap-2 hover:opacity-80">
-              <span className="text-2xl">🌿</span>
+              <img
+                src="/main-verte-logo.svg"
+                alt=""
+                style={{ height: 42, width: 'auto' }}
+                aria-hidden
+              />
               <div>
-                <div className="font-bold text-green-800 text-sm">Pilifs LFSB</div>
+                <div className="font-bold text-green-800 text-sm">Main Verte</div>
                 <div className="text-xs text-gray-400">Administration</div>
               </div>
             </Link>

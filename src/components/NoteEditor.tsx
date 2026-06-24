@@ -366,7 +366,7 @@ export default function NoteEditor({ categories, initialNote, initialType = 'SIG
         </div>
 
         {preview ? (
-          <div className="p-5 prose prose-blue max-w-none min-h-[200px]">
+          <div className="p-5 prose prose-green max-w-none min-h-[200px]">
             {content ? (
               <div dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, '<br>') }} />
             ) : (
@@ -382,7 +382,7 @@ export default function NoteEditor({ categories, initialNote, initialType = 'SIG
               onKeyUp={(e) => detectLink(e.currentTarget.value, e.currentTarget.selectionStart)}
               onClick={(e) => detectLink(e.currentTarget.value, e.currentTarget.selectionStart)}
               onBlur={() => setTimeout(() => setLinkQuery(null), 150)}
-              className="w-full p-5 font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[300px]"
+              className="w-full p-5 font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-green-700 min-h-[300px]"
               placeholder={`# Titre\n\nContenu en Markdown...\n\nTape [[ pour lier un autre signe (façon Obsidian)`}
               spellCheck={false}
             />
@@ -399,9 +399,9 @@ export default function NoteEditor({ categories, initialNote, initialType = 'SIG
                       key={n.slug}
                       type="button"
                       onMouseDown={(e) => { e.preventDefault(); insertLink(n.title) }}
-                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-blue-50"
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-green-50"
                     >
-                      <span className="text-blue-600" aria-hidden>🔗</span>
+                      <span className="text-green-700" aria-hidden>🔗</span>
                       <span className="font-semibold text-gray-800">{n.title}</span>
                       <span className="ml-auto font-mono text-xs text-gray-400">/{n.slug}</span>
                     </button>

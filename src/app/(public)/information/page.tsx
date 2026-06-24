@@ -7,7 +7,7 @@ import remarkGfm from 'remark-gfm'
 import type { Metadata } from 'next'
 import { HomeIcon, InfoIcon } from '@/components/icons'
 
-export const metadata: Metadata = { title: 'Informations' }
+export const metadata: Metadata = { title: 'Le projet' }
 export const revalidate = 60
 
 async function getInformationPages() {
@@ -39,11 +39,11 @@ export default async function InformationPage() {
           <HomeIcon width={18} height={18} />
         </Link>
         <span aria-hidden>/</span>
-        <span className="font-bold text-[var(--ink)]" aria-current="page">Information</span>
+        <span className="font-bold text-[var(--ink)]" aria-current="page">Le projet</span>
       </nav>
 
       <h1 className="flex items-center gap-3 text-3xl font-extrabold tracking-tight text-[var(--ink)]">
-        <InfoIcon width={32} height={32} className="text-[var(--brand-700)]" /> Information
+        <InfoIcon width={32} height={32} className="text-[var(--brand-700)]" /> Le projet Main Verte
       </h1>
 
       {main ? (
@@ -57,7 +57,7 @@ export default async function InformationPage() {
           )}
           <div className="p-6 sm:p-8">
             <h2 className="mb-4 text-2xl font-extrabold text-[var(--ink)]">{main.title}</h2>
-            <div className="prose prose-blue max-w-none text-[var(--ink-soft)]">
+            <div className="prose prose-green max-w-none text-[var(--ink-soft)]">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {parseObsidianLinks(main.content)}
               </ReactMarkdown>
@@ -67,14 +67,14 @@ export default async function InformationPage() {
       ) : (
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-10 text-center shadow-soft">
           <InfoIcon width={48} height={48} className="mx-auto text-[var(--muted)]" />
-          <p className="mt-4 font-semibold text-[var(--muted)]">Pas encore de contenu d'information.</p>
+          <p className="mt-4 font-semibold text-[var(--muted)]">Pas encore de contenu pour présenter le projet.</p>
         </div>
       )}
 
       {others.length > 0 && (
         <section aria-labelledby="other-pages">
           <h2 id="other-pages" className="mb-4 text-xl font-extrabold text-[var(--ink)]">
-            Autres informations
+            Autres repères
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {others.map((page) => (

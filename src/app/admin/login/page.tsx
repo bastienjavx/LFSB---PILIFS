@@ -2,9 +2,9 @@
 
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
@@ -38,8 +38,14 @@ export default function LoginPage() {
     <div className="min-h-screen bg-green-50 flex items-center justify-center p-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <div className="text-5xl mb-3" role="img" aria-label="Ferme">🌿</div>
-          <h1 className="text-2xl font-bold text-green-800">Pilifs LFSB</h1>
+          <img
+            src="/main-verte-logo.svg"
+            alt=""
+            className="mx-auto mb-3"
+            style={{ height: 92, width: 'auto' }}
+            aria-hidden
+          />
+          <h1 className="text-2xl font-bold text-green-800">Main Verte</h1>
           <p className="text-gray-500 text-sm mt-1">Panneau d'administration</p>
         </div>
 
@@ -67,7 +73,7 @@ export default function LoginPage() {
               required
               autoComplete="email"
               className="input-field"
-              placeholder="admin@pilifs.be"
+              placeholder="admin@mainverte.be"
             />
           </div>
 
@@ -106,5 +112,13 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }

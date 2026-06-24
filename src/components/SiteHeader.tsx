@@ -13,7 +13,7 @@ import {
 const links = [
   { href: '/', label: 'Accueil', Icon: HomeIcon, exact: true },
   { href: '/signes', label: 'Signes', Icon: HandIcon },
-  { href: '/information', label: 'Information', Icon: InfoIcon },
+  { href: '/information', label: 'Projet', Icon: InfoIcon },
   { href: '/admin', label: 'Administration', Icon: AdminIcon },
 ]
 
@@ -29,17 +29,20 @@ export default function SiteHeader() {
         <Link
           href="/"
           className="no-highlight inline-flex items-center gap-3"
-          aria-label="Accueil PILIFS LFSB"
+          aria-label="Accueil Main Verte"
         >
-          <span className="brand-mark" aria-hidden>
-            <HandIcon width={26} height={26} stroke="white" />
-          </span>
+          <img
+            src="/main-verte-logo.svg"
+            alt=""
+            style={{ height: 46, width: 'auto' }}
+            aria-hidden
+          />
           <span className="leading-none">
             <span className="block text-xl font-extrabold tracking-tight text-[var(--ink)]">
-              PILIFS
+              Main Verte
             </span>
-            <span className="block text-xs font-bold tracking-[0.2em] text-[var(--brand-700)]">
-              LFSB
+            <span className="block text-xs font-bold tracking-[0.14em] text-[var(--brand-700)]">
+              LFSB AUX PILIFS
             </span>
           </span>
         </Link>

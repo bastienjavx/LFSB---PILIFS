@@ -13,7 +13,7 @@ interface State {
   highlightLinks: boolean
 }
 
-const storageKey = 'pilifs-a11y'
+const storageKey = 'main-verte-a11y'
 
 const defaultState: State = {
   textSize: 'normal',
@@ -26,7 +26,7 @@ const textSizes: TextSize[] = ['small', 'normal', 'large', 'xlarge']
 
 export default function AccessibilityToolbar() {
   const [state, setState] = useState<State>(defaultState)
-  const [open, setOpen] = useState(true)
+  const [open, setOpen] = useState(false)
 
   // Charge les préférences enregistrées
   useEffect(() => {

@@ -51,7 +51,7 @@ export default function ImportPage() {
         </p>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-700">
+      <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-sm text-green-800">
         <p className="font-medium mb-2">💡 Format supporté</p>
         <ul className="space-y-1 list-disc list-inside">
           <li>Fichiers Markdown (.md) avec ou sans frontmatter YAML</li>

@@ -28,7 +28,7 @@ export default async function AdminDashboard() {
     <div className="max-w-4xl space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-gray-900">Tableau de bord</h1>
-        <p className="text-gray-500 mt-1">Gestion du vault Pilifs LFSB</p>
+        <p className="text-gray-500 mt-1">Gestion des contenus Main Verte</p>
       </div>
 
       {/* Stats */}

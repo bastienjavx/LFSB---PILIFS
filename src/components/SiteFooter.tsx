@@ -20,7 +20,7 @@ export default function SiteFooter() {
             </span>
           )
           return href ? (
-            <Link key={label} href={href} className="no-highlight rounded-lg py-1 transition hover:text-blue-200">
+            <Link key={label} href={href} className="no-highlight rounded-lg py-1 transition hover:text-[var(--harvest)]">
               {content}
             </Link>
           ) : (
@@ -28,8 +28,8 @@ export default function SiteFooter() {
           )
         })}
       </div>
-      <div className="border-t border-white/10 py-3 text-center text-xs text-blue-200/80">
-        PILIFS — Langue Française des Signes de Belgique · Ferme Nos Pilifs
+      <div className="border-t border-white/10 py-3 text-center text-xs text-white/75">
+        Main Verte — Langue Française des Signes de Belgique · Ferme Nos Pilifs
       </div>
     </footer>
   )

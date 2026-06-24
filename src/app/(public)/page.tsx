@@ -16,13 +16,13 @@ import {
 export const revalidate = 60
 
 const fallbackCategories = [
-  { id: 'c1', name: 'Personnes', slug: 'personnes', icon: 'icon:people', color: '#2563eb', order: 1, _count: { notes: 0 } },
-  { id: 'c2', name: 'Maison', slug: 'maison', icon: 'icon:home', color: '#16a34a', order: 2, _count: { notes: 0 } },
-  { id: 'c3', name: 'Alimentation', slug: 'alimentation', icon: 'icon:food', color: '#ea580c', order: 3, _count: { notes: 0 } },
-  { id: 'c4', name: 'Éducation', slug: 'education', icon: 'icon:book', color: '#0d9488', order: 4, _count: { notes: 0 } },
+  { id: 'c1', name: 'Personnes', slug: 'personnes', icon: 'icon:people', color: '#246b3d', order: 1, _count: { notes: 0 } },
+  { id: 'c2', name: 'Maison', slug: 'maison', icon: 'icon:home', color: '#7bc96f', order: 2, _count: { notes: 0 } },
+  { id: 'c3', name: 'Alimentation', slug: 'alimentation', icon: 'icon:food', color: '#e9b949', order: 3, _count: { notes: 0 } },
+  { id: 'c4', name: 'Éducation', slug: 'education', icon: 'icon:book', color: '#3d8ca8', order: 4, _count: { notes: 0 } },
   { id: 'c5', name: 'Santé', slug: 'sante', icon: 'icon:health', color: '#dc2626', order: 5, _count: { notes: 0 } },
-  { id: 'c6', name: 'Transports', slug: 'transports', icon: 'icon:bus', color: '#7c3aed', order: 6, _count: { notes: 0 } },
-  { id: 'c7', name: 'Autres catégories', slug: 'autres', icon: 'icon:dots', color: '#1e3a8a', order: 7, _count: { notes: 0 } },
+  { id: 'c6', name: 'Transports', slug: 'transports', icon: 'icon:bus', color: '#6f5aa8', order: 6, _count: { notes: 0 } },
+  { id: 'c7', name: 'Autres catégories', slug: 'autres', icon: 'icon:dots', color: '#123d2a', order: 7, _count: { notes: 0 } },
 ]
 
 async function getHomeData() {
@@ -50,10 +50,10 @@ const methods = [
 ]
 
 const resources = [
-  { Icon: BookIcon, title: 'Lire en facile', sub: 'Information en langage simplifié.', href: '/information', color: '#2563eb' },
-  { Icon: VideoIcon, title: 'Vidéos explicatives', sub: 'Apprendre avec des vidéos claires.', href: '/signes', color: '#16a34a' },
-  { Icon: PencilIcon, title: 'Exercices pratiques', sub: "S'entraîner et progresser à son rythme.", href: '/signes', color: '#ea580c' },
-  { Icon: QuestionIcon, title: 'Foire aux questions', sub: 'Réponses aux questions fréquentes.', href: '/information', color: '#2563eb' },
+  { Icon: BookIcon, title: 'Lire en facile', sub: 'Information en langage simplifié.', href: '/information', color: '#246b3d' },
+  { Icon: VideoIcon, title: 'Vidéos claires', sub: 'Voir les signes, geste par geste.', href: '/signes', color: '#3d8ca8' },
+  { Icon: PencilIcon, title: 'S’entraîner', sub: "Revenir aux mots utiles du quotidien.", href: '/signes', color: '#e9b949' },
+  { Icon: QuestionIcon, title: 'Comprendre le projet', sub: 'La LFSB dans la vie des Pilifs.', href: '/information', color: '#246b3d' },
 ]
 
 export default async function HomePage() {
@@ -66,12 +66,12 @@ export default async function HomePage() {
         <div className="mx-auto grid max-w-[1400px] items-center gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8 lg:py-16">
           <div>
             <h1 className="text-4xl font-extrabold leading-[1.08] tracking-tight text-[var(--ink)] sm:text-5xl">
-              La langue des signes à portée de toutes et tous.
+              Apprendre les signes au rythme de la ferme.
             </h1>
             <p className="mt-5 text-lg font-semibold text-[var(--ink-soft)]">
-              Apprendre, comprendre, communiquer.
+              Main Verte rassemble les signes LFSB utiles à la vie de tous les jours.
               <br />
-              Bienvenue sur PILIFS – LFSB.
+              Un outil clair, accessible et vivant pour la Ferme Nos Pilifs.
             </p>
             {totalSigns > 0 && (
               <p className="mt-4 inline-flex items-center gap-2 rounded-full bg-[var(--brand-soft)] px-4 py-1.5 text-sm font-bold text-[var(--brand-800)]">
@@ -83,7 +83,7 @@ export default async function HomePage() {
 
           <div>
             <h2 className="text-2xl font-extrabold text-[var(--ink)]">
-              Rechercher un signe
+              Rechercher dans Main Verte
             </h2>
 
             <form method="GET" action="/signes" className="mt-4" role="search">
@@ -98,7 +98,7 @@ export default async function HomePage() {
                   id="home-search"
                   type="search"
                   name="q"
-                  placeholder="Rechercher un signe…"
+                  placeholder="Chercher un mot, un geste, une situation…"
                   className="h-16 w-full border-0 bg-transparent px-4 text-lg font-semibold text-[var(--ink)] placeholder:text-[var(--muted)] focus:outline-none"
                   aria-label="Rechercher un signe"
                 />
@@ -130,8 +130,8 @@ export default async function HomePage() {
 
       {/* ---------- Catégories ---------- */}
       <section className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 lg:px-8" aria-labelledby="cat-title">
-        <h2 id="cat-title" className="text-2xl font-extrabold text-[var(--ink)]">
-          Explorer les signes par catégorie
+          <h2 id="cat-title" className="text-2xl font-extrabold text-[var(--ink)]">
+          Explorer les signes par univers
         </h2>
         <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-7">
           {categories.map((cat) => (
@@ -161,7 +161,7 @@ export default async function HomePage() {
       <section className="bg-[var(--surface-alt)] py-12" aria-labelledby="res-title">
         <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
           <h2 id="res-title" className="text-2xl font-extrabold text-[var(--ink)]">
-            Des ressources claires pour tous
+            Des repères simples pour communiquer
           </h2>
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {resources.map(({ Icon, title, sub, href, color }) => (

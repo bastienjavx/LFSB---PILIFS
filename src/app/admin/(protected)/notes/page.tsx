@@ -33,7 +33,7 @@ export default async function AdminNotesPage({ searchParams }: Props) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-gray-900">Notes & contenus</h1>
-        <Link href="/admin/notes/new" className="btn-primary flex items-center gap-2">
+        <Link href={`/admin/notes/new${type ? `?type=${type}` : ''}`} className="btn-primary flex items-center gap-2">
           <span aria-hidden>➕</span> Nouveau
         </Link>
       </div>
@@ -78,7 +78,7 @@ export default async function AdminNotesPage({ searchParams }: Props) {
           <div className="p-12 text-center">
             <div className="text-4xl mb-3" aria-hidden>📝</div>
             <p className="text-gray-400">Aucune note trouvée</p>
-            <Link href="/admin/notes/new" className="btn-primary inline-flex items-center gap-2 mt-4">
+            <Link href={`/admin/notes/new${type ? `?type=${type}` : ''}`} className="btn-primary inline-flex items-center gap-2 mt-4">
               <span aria-hidden>➕</span> Créer une note
             </Link>
           </div>
@@ -136,7 +136,7 @@ export default async function AdminNotesPage({ searchParams }: Props) {
                     {new Date(note.updatedAt).toLocaleDateString('fr-BE')}
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex items-center gap-2">
                       <Link
                         href={`/admin/notes/${note.id}`}
                         className="text-green-700 hover:underline text-sm font-medium"

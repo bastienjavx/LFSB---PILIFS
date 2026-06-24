@@ -26,9 +26,9 @@ export default function FlashcardTrainer({ cards }: { cards: Flashcard[] }) {
   const orderedCards = useMemo(() => {
     if (seed === 0) return cards
     return [...cards].sort((a, b) => {
-      const left = `${a.id}-${seed}`
-      const right = `${b.id}-${seed}`
-      return left.localeCompare(right)
+      const left = shuffleScore(a.id, seed)
+      const right = shuffleScore(b.id, seed)
+      return left - right
     })
   }, [cards, seed])
 
@@ -132,4 +132,13 @@ export default function FlashcardTrainer({ cards }: { cards: Flashcard[] }) {
       </aside>
     </div>
   )
+}
+
+function shuffleScore(value: string, seed: number) {
+  let hash = seed * 2166136261
+  for (let i = 0; i < value.length; i += 1) {
+    hash ^= value.charCodeAt(i)
+    hash = Math.imul(hash, 16777619)
+  }
+  return hash >>> 0
 }

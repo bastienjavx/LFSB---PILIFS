@@ -1,15 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 
 const links = [
   { href: '/admin', label: 'Tableau de bord', icon: '📊', exact: true },
-  { href: '/admin/notes', label: 'Notes & contenus', icon: '📝' },
-  { href: '/admin/notes?type=BLOG', label: 'Blog', icon: '📰' },
-  { href: '/admin/notes?type=TRAINING', label: 'Formations', icon: '🎓' },
-  { href: '/admin/notes?type=GUIDE', label: 'Guides', icon: '🧭' },
+  { href: '/admin/notes', label: 'Notes & contenus', icon: '📝', type: '' },
+  { href: '/admin/notes?type=BLOG', label: 'Blog', icon: '📰', type: 'BLOG' },
+  { href: '/admin/notes?type=TRAINING', label: 'Formations', icon: '🎓', type: 'TRAINING' },
+  { href: '/admin/notes?type=GUIDE', label: 'Guides', icon: '🧭', type: 'GUIDE' },
   { href: '/admin/categories', label: 'Catégories', icon: '🗂️' },
   { href: '/admin/media', label: 'Médias', icon: '🖼️' },
   { href: '/admin/import', label: 'Import Obsidian', icon: '📥' },
@@ -18,6 +18,8 @@ const links = [
 
 export default function AdminNav() {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const currentType = searchParams.get('type') || ''
   const { data: session } = useSession()
   const isAdmin = (session?.user as { role?: string } | undefined)?.role === 'ADMIN'
 
@@ -28,8 +30,12 @@ export default function AdminNav() {
 
   return (
     <>
-      {visibleLinks.map(({ href, label, icon, exact }) => {
-        const active = exact ? pathname === href : pathname.startsWith(href)
+      {visibleLinks.map(({ href, label, icon, exact, type }) => {
+        const active = type !== undefined
+          ? pathname.startsWith('/admin/notes') && currentType === type
+          : exact
+            ? pathname === href
+            : pathname.startsWith(href)
         return (
           <Link
             key={href}

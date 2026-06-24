@@ -1,0 +1,68 @@
+FROM node:20-alpine AS base
+
+# ---- Dépendances ----
+FROM base AS deps
+RUN apk add --no-cache libc6-compat openssl
+WORKDIR /app
+
+COPY package*.json ./
+COPY prisma ./prisma/
+
+RUN npm ci
+RUN npx prisma generate
+
+# ---- Build ----
+FROM base AS builder
+RUN apk add --no-cache openssl
+WORKDIR /app
+
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/node_modules/.prisma ./node_modules/.prisma
+COPY . .
+
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_ENV=production
+# URL factice pour le build (les vraies variables sont injectées par Railway)
+ENV DATABASE_URL="postgresql://placeholder:placeholder@placeholder:5432/placeholder"
+ENV NEXTAUTH_SECRET="build-placeholder-secret"
+ENV NEXTAUTH_URL="http://localhost:3000"
+
+RUN npm run build
+
+# ---- Runner ----
+FROM base AS runner
+RUN apk add --no-cache openssl
+WORKDIR /app
+
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Copier les fichiers statiques
+COPY --from=builder /app/public ./public
+
+# Créer le dossier uploads avec les bonnes permissions
+RUN mkdir -p ./public/uploads && chown -R nextjs:nodejs ./public/uploads
+
+# Copier le build standalone
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+# Copier les migrations Prisma
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
+
+# Script de démarrage
+COPY --chown=nextjs:nodejs start.sh ./start.sh
+RUN chmod +x ./start.sh
+
+USER nextjs
+
+EXPOSE 3000
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["./start.sh"]

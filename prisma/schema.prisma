@@ -1,0 +1,80 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      Role     @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String
+  slug      String   @unique
+  icon      String?
+  color     String   @default("#15803d")
+  order     Int      @default(0)
+  notes     Note[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Note {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  content     String    @default("") @db.Text
+  excerpt     String    @default("")
+  published   Boolean   @default(false)
+  type        NoteType  @default(SIGN)
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  media       Media[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([categoryId])
+  @@index([published])
+  @@index([type])
+}
+
+model Media {
+  id        String    @id @default(cuid())
+  filename  String
+  url       String
+  mimeType  String
+  size      Int       @default(0)
+  alt       String    @default("")
+  type      MediaType
+  noteId    String?
+  note      Note?     @relation(fields: [noteId], references: [id], onDelete: SetNull)
+  createdAt DateTime  @default(now())
+}
+
+enum NoteType {
+  SIGN
+  INFORMATION
+  PAGE
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  GIF
+  DOCUMENT
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+}

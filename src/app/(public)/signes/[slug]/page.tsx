@@ -20,11 +20,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-  const notes = await prisma.note.findMany({
-    where: { published: true },
-    select: { slug: true },
-  })
-  return notes.map((n) => ({ slug: n.slug }))
+  // La base de données n'est pas joignable pendant le build (Railway/Docker).
+  // On génère les pages à la demande (ISR via `revalidate`) plutôt qu'au build.
+  try {
+    const notes = await prisma.note.findMany({
+      where: { published: true },
+      select: { slug: true },
+    })
+    return notes.map((n) => ({ slug: n.slug }))
+  } catch {
+    return []
+  }
 }
 
 export default async function SignePage({ params }: Props) {

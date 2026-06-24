@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   },
   description: 'Signes LFSB (Langue Française des Signes de Belgique) de la Ferme Nos Pilifs',
   keywords: ['LFSB', 'langue des signes', 'Nos Pilifs', 'ferme', 'Belgique', 'accessibilité'],
+  icons: {
+    icon: '/favicon.svg',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

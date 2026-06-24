@@ -9,14 +9,24 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = { title: 'Informations' }
 export const revalidate = 60
 
+async function getInformationPages() {
+  // La DB n'est pas joignable pendant le build (Railway/Docker) : on renvoie
+  // une liste vide, l'ISR (`revalidate`) remplira la page au premier accès.
+  try {
+    return await prisma.note.findMany({
+      where: { published: true, type: NoteType.INFORMATION },
+      orderBy: { updatedAt: 'desc' },
+      include: {
+        media: { where: { type: 'IMAGE' }, take: 1 },
+      },
+    })
+  } catch {
+    return []
+  }
+}
+
 export default async function InformationPage() {
-  const pages = await prisma.note.findMany({
-    where: { published: true, type: NoteType.INFORMATION },
-    orderBy: { updatedAt: 'desc' },
-    include: {
-      media: { where: { type: 'IMAGE' }, take: 1 },
-    },
-  })
+  const pages = await getInformationPages()
 
   const main = pages.find((p) => p.slug === 'bienvenue-a-nos-pilifs') || pages[0]
   const others = pages.filter((p) => p.id !== main?.id)

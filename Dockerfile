@@ -5,6 +5,12 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 
+# Aligner npm de la CI sur la version utilisée en local pour générer
+# package-lock.json (npm 11). node:20-alpine embarque npm 10.x, qui rejette
+# les locks écrits par npm 11 (« Missing ... from lock file »). Pin pour que
+# `npm ci` reste reproductible quelle que soit la machine qui édite le lock.
+RUN npm install -g npm@11.6.2
+
 COPY package*.json ./
 COPY prisma ./prisma/
 

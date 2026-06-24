@@ -98,20 +98,22 @@ export default async function SignesPage({ searchParams }: Props) {
 
         <form method="GET" className="w-full max-w-md" role="search">
           {categorie && <input type="hidden" name="categorie" value={categorie} />}
-          <div className="flex overflow-hidden rounded-xl border-2 border-[var(--border-strong)] bg-[var(--surface)] focus-within:border-[var(--brand-700)]">
-            <span className="flex items-center pl-3 text-[var(--muted)]" aria-hidden>
-              <SearchIcon width={20} height={20} />
-            </span>
+          <div className="flex items-center gap-2 rounded-full border border-[var(--border-strong)] bg-[var(--surface)] py-1.5 pl-4 pr-1.5 shadow-soft transition focus-within:border-[var(--brand-700)] focus-within:ring-2 focus-within:ring-[var(--brand-200)]">
+            <SearchIcon width={20} height={20} className="shrink-0 text-[var(--muted)]" aria-hidden />
             <input
               type="search"
               name="q"
               defaultValue={q || ''}
               placeholder="Chercher un signe…"
-              className="h-12 w-full border-0 bg-transparent px-3 text-base font-semibold text-[var(--ink)] placeholder:text-[var(--muted)] focus:outline-none"
+              className="h-9 w-full border-0 bg-transparent text-base font-semibold text-[var(--ink)] placeholder:text-[var(--muted)] focus:outline-none"
               aria-label="Chercher un signe"
             />
-            <button type="submit" className="bg-[var(--brand-700)] px-4 text-white hover:bg-[var(--brand-800)]" aria-label="Rechercher">
-              <SearchIcon width={20} height={20} stroke="white" />
+            <button
+              type="submit"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--brand-700)] text-white transition hover:bg-[var(--brand-800)]"
+              aria-label="Lancer la recherche"
+            >
+              <SearchIcon width={18} height={18} stroke="white" />
             </button>
           </div>
         </form>

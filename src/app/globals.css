@@ -45,11 +45,12 @@
     @apply box-border;
   }
 
-  /* Accessibilité : le contour clavier doit toujours rester visible.
-     Le `!important` empêche les `focus:outline-none` des composants de
-     masquer l'indicateur de focus (WCAG 2.4.7). */
+  /* Accessibilité : contour de focus clavier visible (WCAG 2.4.7).
+     Les composants n'utilisent plus `focus:outline-none`, donc cette règle
+     s'applique. Les champs de recherche gardent `focus:outline-none` car leur
+     conteneur affiche déjà le focus (via focus-within) — évite la double barre. */
   :focus-visible {
-    outline: 3px solid var(--focus) !important;
+    outline: 3px solid var(--focus);
     outline-offset: 3px;
     border-radius: 4px;
   }
@@ -62,11 +63,11 @@
 
 @layer components {
   .btn-primary {
-    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[var(--brand-700)] px-6 py-3 text-base font-bold text-white shadow-sm transition-colors hover:bg-[var(--brand-800)] focus:outline-none;
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[var(--brand-700)] px-6 py-3 text-base font-bold text-white shadow-sm transition-colors hover:bg-[var(--brand-800)];
   }
 
   .btn-secondary {
-    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-[var(--border-strong)] bg-[var(--surface)] px-6 py-3 text-base font-bold text-[var(--ink)] transition-colors hover:border-[var(--brand-700)] hover:text-[var(--brand-700)] focus:outline-none;
+    @apply inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-[var(--border-strong)] bg-[var(--surface)] px-6 py-3 text-base font-bold text-[var(--ink)] transition-colors hover:border-[var(--brand-700)] hover:text-[var(--brand-700)];
   }
 
   .btn-danger {
@@ -78,7 +79,7 @@
   }
 
   .input-field {
-    @apply w-full rounded-xl border-2 border-[var(--border-strong)] bg-[var(--surface)] px-4 py-3 text-base font-semibold text-[var(--ink)] placeholder:text-[var(--muted)] focus:border-[var(--brand-700)] focus:outline-none;
+    @apply w-full rounded-xl border-2 border-[var(--border-strong)] bg-[var(--surface)] px-4 py-3 text-base font-semibold text-[var(--ink)] placeholder:text-[var(--muted)] focus:border-[var(--brand-700)];
   }
 
   .sign-card {
@@ -108,15 +109,15 @@
 
   /* Tuiles catégories / ressources */
   .tile {
-    @apply flex flex-col items-center justify-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 text-center shadow-soft transition hover:-translate-y-1 hover:border-[var(--brand-200)] hover:shadow-lift focus:outline-none;
+    @apply flex flex-col items-center justify-center gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 text-center shadow-soft transition hover:-translate-y-1 hover:border-[var(--brand-200)] hover:shadow-lift;
   }
 
   .method-card {
-    @apply flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-left transition hover:border-[var(--brand-300)] hover:bg-[var(--brand-soft)] focus:outline-none;
+    @apply flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-left transition hover:border-[var(--brand-300)] hover:bg-[var(--brand-soft)];
   }
 
   .resource-card {
-    @apply flex items-center gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-left shadow-soft transition hover:-translate-y-0.5 hover:border-[var(--brand-200)] hover:shadow-lift focus:outline-none;
+    @apply flex items-center gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-left shadow-soft transition hover:-translate-y-0.5 hover:border-[var(--brand-200)] hover:shadow-lift;
   }
 
   /* Barre d'accessibilité flottante */
@@ -133,7 +134,7 @@
   }
 
   .a11y-btn {
-    @apply inline-flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-lg border-2 border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-bold text-[var(--ink)] transition hover:border-[var(--brand-700)] focus:outline-none;
+    @apply inline-flex h-10 min-w-10 items-center justify-center gap-1.5 rounded-lg border-2 border-[var(--border)] bg-[var(--surface)] px-3 text-sm font-bold text-[var(--ink)] transition hover:border-[var(--brand-700)];
   }
 
   .a11y-btn[aria-pressed='true'],
@@ -142,7 +143,7 @@
   }
 
   .a11y-toggle {
-    @apply relative inline-flex h-7 w-12 shrink-0 items-center rounded-full bg-[var(--border-strong)] transition-colors focus:outline-none;
+    @apply relative inline-flex h-7 w-12 shrink-0 items-center rounded-full bg-[var(--border-strong)] transition-colors;
   }
 
   .a11y-toggle[aria-pressed='true'] {

@@ -35,7 +35,7 @@ export default function ImportPage() {
     setLoading(false)
 
     if (!res.ok) {
-      setError('Erreur lors de l'import')
+      setError("Erreur lors de l'import")
       return
     }
 

@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 
 const links = [
   { href: '/admin', label: 'Tableau de bord', icon: '📊', exact: true },
@@ -10,14 +10,22 @@ const links = [
   { href: '/admin/categories', label: 'Catégories', icon: '🗂️' },
   { href: '/admin/media', label: 'Médias', icon: '🖼️' },
   { href: '/admin/import', label: 'Import Obsidian', icon: '📥' },
+  { href: '/admin/utilisateurs', label: 'Administrateurs', icon: '👥' },
 ]
 
 export default function AdminNav() {
   const pathname = usePathname()
+  const { data: session } = useSession()
+  const isAdmin = (session?.user as { role?: string } | undefined)?.role === 'ADMIN'
+
+  // Le lien « Administrateurs » donne accès à la gestion des comptes et au
+  // journal : réservé aux ADMIN. Les éditeurs gardent l'accès à leur 2FA via
+  // la page elle-même, mais on masque l'entrée de menu pour rester simple.
+  const visibleLinks = links.filter((l) => l.href !== '/admin/utilisateurs' || isAdmin)
 
   return (
     <>
-      {links.map(({ href, label, icon, exact }) => {
+      {visibleLinks.map(({ href, label, icon, exact }) => {
         const active = exact ? pathname === href : pathname.startsWith(href)
         return (
           <Link

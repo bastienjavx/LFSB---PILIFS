@@ -9,6 +9,8 @@ function LoginForm() {
   const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [token, setToken] = useState('')
+  const [show2fa, setShow2fa] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -22,6 +24,7 @@ function LoginForm() {
     const res = await signIn('credentials', {
       email,
       password,
+      token,
       redirect: false,
     })
 
@@ -29,9 +32,15 @@ function LoginForm() {
 
     if (res?.ok) {
       router.push(callbackUrl)
-    } else {
-      setError('Email ou mot de passe incorrect')
+      return
     }
+
+    // NextAuth renvoie le message d'erreur métier dans res.error.
+    const message = res?.error || 'Email ou mot de passe incorrect'
+    if (message.includes('2FA')) {
+      setShow2fa(true)
+    }
+    setError(message)
   }
 
   return (
@@ -91,6 +100,29 @@ function LoginForm() {
               className="input-field"
             />
           </div>
+
+          {show2fa && (
+            <div>
+              <label htmlFor="token" className="block text-sm font-medium text-gray-700 mb-1">
+                Code de double authentification
+              </label>
+              <input
+                id="token"
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                value={token}
+                onChange={(e) => setToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                required
+                autoFocus
+                className="input-field tracking-[0.4em] text-center font-mono text-lg"
+                placeholder="000000"
+              />
+              <p className="text-xs text-gray-400 mt-1">
+                Saisis le code à 6 chiffres de ton application d'authentification.
+              </p>
+            </div>
+          )}
 
           <button
             type="submit"

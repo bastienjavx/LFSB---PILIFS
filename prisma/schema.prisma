@@ -11,9 +11,37 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   password  String
+  name      String?
   role      Role     @default(ADMIN)
+
+  // 2FA TOTP (application d'authentification — aucun email requis)
+  twoFactorSecret  String?
+  twoFactorEnabled Boolean @default(false)
+
+  // Anti-brute-force : compteur d'échecs + verrouillage temporaire
+  failedAttempts Int       @default(0)
+  lockedUntil    DateTime?
+
+  loginEvents LoginEvent[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Journal des connexions (réussites et échecs) par administrateur.
+model LoginEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  email     String
+  success   Boolean
+  reason    String?
+  ip        String?
+  userAgent String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model Category {

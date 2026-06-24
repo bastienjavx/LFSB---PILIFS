@@ -6,6 +6,7 @@ import { NoteType } from '@prisma/client'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import type { Metadata } from 'next'
+import { CategoryIcon, HomeIcon } from '@/components/icons'
 
 export const revalidate = 60
 
@@ -64,25 +65,27 @@ export default async function SignePage({ params }: Props) {
   const parsedContent = parseObsidianLinks(note.content)
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6" aria-label="Fil d'Ariane">
-        <Link href="/" className="hover:text-green-700">🏠</Link>
+      <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm font-semibold text-[var(--muted)]" aria-label="Fil d'Ariane">
+        <Link href="/" className="inline-flex items-center hover:text-[var(--brand-700)]" aria-label="Accueil">
+          <HomeIcon width={18} height={18} />
+        </Link>
         <span aria-hidden>/</span>
-        <Link href="/signes" className="hover:text-green-700">Signes</Link>
+        <Link href="/signes" className="hover:text-[var(--brand-700)]">Signes</Link>
         {note.category && (
           <>
             <span aria-hidden>/</span>
             <Link
               href={`/signes?categorie=${note.category.slug}`}
-              className="hover:text-green-700"
+              className="hover:text-[var(--brand-700)]"
             >
-              {note.category.icon} {note.category.name}
+              {note.category.name}
             </Link>
           </>
         )}
         <span aria-hidden>/</span>
-        <span className="text-gray-800 font-medium" aria-current="page">{note.title}</span>
+        <span className="font-bold text-[var(--ink)]" aria-current="page">{note.title}</span>
       </nav>
 
       <div className="grid lg:grid-cols-2 gap-8">
@@ -103,18 +106,16 @@ export default async function SignePage({ params }: Props) {
               </video>
             </div>
           ) : images[0] ? (
-            <div className="rounded-2xl overflow-hidden shadow-lg">
+            <div className="overflow-hidden rounded-2xl shadow-lg">
               <img
                 src={images[0].url}
                 alt={images[0].alt || `Signe LFSB: ${note.title}`}
-                className="w-full object-contain bg-green-50"
+                className="w-full bg-[var(--brand-soft)] object-contain"
               />
             </div>
           ) : (
-            <div className="aspect-square bg-green-100 rounded-2xl flex items-center justify-center">
-              <span className="text-8xl" role="img" aria-label={note.title}>
-                {note.category?.icon || '👐'}
-              </span>
+            <div className="flex aspect-square items-center justify-center rounded-2xl bg-[var(--brand-soft)]" style={{ color: note.category?.color || 'var(--brand-700)' }}>
+              <CategoryIcon slug={note.category?.slug} width={96} height={96} />
             </div>
           )}
 
@@ -136,31 +137,32 @@ export default async function SignePage({ params }: Props) {
         {/* Contenu */}
         <div className="space-y-4">
           {note.category && (
-            <div
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium"
-              style={{ backgroundColor: note.category.color + '20', color: note.category.color }}
+            <Link
+              href={`/signes?categorie=${note.category.slug}`}
+              className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-bold"
+              style={{ backgroundColor: note.category.color + '1a', color: note.category.color }}
             >
-              <span aria-hidden>{note.category.icon}</span>
+              <CategoryIcon slug={note.category.slug} width={18} height={18} />
               {note.category.name}
-            </div>
+            </Link>
           )}
 
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">{note.title}</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight text-[var(--ink)] sm:text-4xl">{note.title}</h1>
 
           {note.excerpt && (
-            <p className="text-lg text-gray-600 font-medium">{note.excerpt}</p>
+            <p className="text-lg font-semibold text-[var(--ink-soft)]">{note.excerpt}</p>
           )}
 
           {note.content && (
-            <div className="prose prose-green max-w-none">
+            <div className="prose prose-blue max-w-none text-[var(--ink-soft)]">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {parsedContent}
               </ReactMarkdown>
             </div>
           )}
 
-          <div className="pt-4 border-t border-gray-100">
-            <Link href="/signes" className="text-green-700 hover:underline text-sm flex items-center gap-1">
+          <div className="border-t border-[var(--border)] pt-4">
+            <Link href="/signes" className="inline-flex items-center gap-1 text-sm font-bold text-[var(--brand-700)] hover:underline">
               <span aria-hidden>←</span> Retour aux signes
             </Link>
           </div>
@@ -170,30 +172,32 @@ export default async function SignePage({ params }: Props) {
       {/* Signes liés */}
       {related.length > 0 && (
         <section className="mt-12" aria-labelledby="related-title">
-          <h2 id="related-title" className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-            <span aria-hidden>🔗</span> Signes liés
+          <h2 id="related-title" className="mb-4 text-xl font-extrabold text-[var(--ink)]">
+            Signes de la même catégorie
           </h2>
-          <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
             {related.map((rel) => (
               <Link
                 key={rel.id}
                 href={`/signes/${rel.slug}`}
                 className="sign-card group"
-                aria-label={`Voir le signe: ${rel.title}`}
+                aria-label={`Voir le signe : ${rel.title}`}
               >
-                <div className="aspect-square bg-green-50 flex items-center justify-center overflow-hidden">
+                <div className="flex aspect-square items-center justify-center overflow-hidden bg-[var(--brand-soft)]">
                   {rel.media[0] ? (
                     <img
                       src={rel.media[0].url}
                       alt={rel.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      className="h-full w-full object-cover transition-transform group-hover:scale-105"
                     />
                   ) : (
-                    <span className="text-3xl" aria-hidden>{note.category?.icon || '👐'}</span>
+                    <span style={{ color: note.category?.color || 'var(--brand-700)' }}>
+                      <CategoryIcon slug={note.category?.slug} width={32} height={32} />
+                    </span>
                   )}
                 </div>
                 <div className="p-2 text-center">
-                  <p className="text-xs font-semibold text-gray-800 truncate">{rel.title}</p>
+                  <p className="truncate text-xs font-bold text-[var(--ink)]">{rel.title}</p>
                 </div>
               </Link>
             ))}

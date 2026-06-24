@@ -10,12 +10,12 @@
     "db:generate": "prisma generate",
     "db:push": "prisma db push --accept-data-loss",
     "db:migrate": "prisma migrate dev",
-    "db:seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
+    "db:seed": "node prisma/seed.js",
     "db:studio": "prisma studio",
     "postinstall": "prisma generate"
   },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "seed": "node prisma/seed.js"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

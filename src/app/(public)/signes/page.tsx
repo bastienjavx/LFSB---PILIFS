@@ -2,6 +2,7 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { NoteType } from '@prisma/client'
 import type { Metadata } from 'next'
+import { SearchIcon, HandIcon, CategoryIcon } from '@/components/icons'
 
 export const metadata: Metadata = { title: 'Tous les signes' }
 export const revalidate = 60
@@ -10,163 +11,187 @@ interface Props {
   searchParams: { categorie?: string; q?: string }
 }
 
+async function getData(categorie?: string, q?: string) {
+  try {
+    const [categories, notes] = await Promise.all([
+      prisma.category.findMany({ orderBy: { order: 'asc' } }),
+      prisma.note.findMany({
+        where: {
+          published: true,
+          type: NoteType.SIGN,
+          ...(categorie ? { category: { slug: categorie } } : {}),
+          ...(q
+            ? {
+                OR: [
+                  { title: { contains: q, mode: 'insensitive' } },
+                  { excerpt: { contains: q, mode: 'insensitive' } },
+                  { content: { contains: q, mode: 'insensitive' } },
+                ],
+              }
+            : {}),
+        },
+        orderBy: { title: 'asc' },
+        include: {
+          category: true,
+          media: { where: { type: { in: ['IMAGE', 'GIF', 'VIDEO'] } }, take: 1 },
+        },
+      }),
+    ])
+    return { categories, notes }
+  } catch {
+    return { categories: [], notes: [] }
+  }
+}
+
 export default async function SignesPage({ searchParams }: Props) {
   const { categorie, q } = searchParams
-
-  const [categories, notes] = await Promise.all([
-    prisma.category.findMany({ orderBy: { order: 'asc' } }),
-    prisma.note.findMany({
-      where: {
-        published: true,
-        type: NoteType.SIGN,
-        ...(categorie ? { category: { slug: categorie } } : {}),
-        ...(q
-          ? {
-              OR: [
-                { title: { contains: q, mode: 'insensitive' } },
-                { excerpt: { contains: q, mode: 'insensitive' } },
-              ],
-            }
-          : {}),
-      },
-      orderBy: { title: 'asc' },
-      include: {
-        category: true,
-        media: { where: { type: { in: ['IMAGE', 'GIF', 'VIDEO'] } }, take: 1 },
-      },
-    }),
-  ])
-
+  const { categories, notes } = await getData(categorie, q)
   const activeCat = categories.find((c) => c.slug === categorie)
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-        <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-          <span>👐</span>
-          {activeCat ? `${activeCat.icon || ''} ${activeCat.name}` : 'Tous les signes'}
-        </h1>
+    <div className="mx-auto max-w-[1400px] space-y-8 px-4 py-10 sm:px-6 lg:px-8">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+        <div>
+          <h1 className="flex items-center gap-3 text-3xl font-extrabold tracking-tight text-[var(--ink)]">
+            {activeCat ? (
+              <span style={{ color: activeCat.color }}>
+                <CategoryIcon slug={activeCat.slug} width={34} height={34} />
+              </span>
+            ) : (
+              <HandIcon width={34} height={34} className="text-[var(--brand-700)]" />
+            )}
+            {activeCat ? activeCat.name : 'Tous les signes'}
+          </h1>
+          <p className="mt-1 text-base font-semibold text-[var(--muted)]">
+            {notes.length} signe{notes.length !== 1 ? 's' : ''}
+            {q ? ` pour « ${q} »` : ''}
+          </p>
+        </div>
 
-        {/* Recherche */}
-        <form method="GET" className="flex-1 max-w-sm" role="search">
+        <form method="GET" className="w-full max-w-md" role="search">
           {categorie && <input type="hidden" name="categorie" value={categorie} />}
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden>🔍</span>
+          <div className="flex overflow-hidden rounded-xl border-2 border-[var(--border-strong)] bg-[var(--surface)] focus-within:border-[var(--brand-700)]">
+            <span className="flex items-center pl-3 text-[var(--muted)]" aria-hidden>
+              <SearchIcon width={20} height={20} />
+            </span>
             <input
               type="search"
               name="q"
               defaultValue={q || ''}
-              placeholder="Chercher un signe..."
-              className="input-field pl-10"
+              placeholder="Chercher un signe…"
+              className="h-12 w-full border-0 bg-transparent px-3 text-base font-semibold text-[var(--ink)] placeholder:text-[var(--muted)] focus:outline-none"
               aria-label="Chercher un signe"
             />
+            <button type="submit" className="bg-[var(--brand-700)] px-4 text-white hover:bg-[var(--brand-800)]" aria-label="Rechercher">
+              <SearchIcon width={20} height={20} stroke="white" />
+            </button>
           </div>
         </form>
       </div>
 
-      {/* Filtre catégories */}
+      {/* Filtres catégories */}
       <div className="flex flex-wrap gap-2" role="list" aria-label="Filtrer par catégorie">
         <Link
           href="/signes"
-          className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-            !categorie
-              ? 'bg-green-700 text-white'
-              : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
-          }`}
           role="listitem"
+          className="rounded-full px-4 py-2 text-sm font-bold transition"
+          style={{
+            background: !categorie ? 'var(--brand-700)' : 'var(--surface)',
+            color: !categorie ? '#fff' : 'var(--ink-soft)',
+            border: '1px solid var(--border-strong)',
+          }}
         >
           Tout
         </Link>
-        {categories.map((cat) => (
-          <Link
-            key={cat.id}
-            href={`/signes?categorie=${cat.slug}${q ? `&q=${q}` : ''}`}
-            className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              categorie === cat.slug
-                ? 'text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
-            }`}
-            style={categorie === cat.slug ? { backgroundColor: cat.color } : {}}
-            role="listitem"
-            aria-current={categorie === cat.slug ? 'page' : undefined}
-          >
-            {cat.icon} {cat.name}
-          </Link>
-        ))}
+        {categories.map((cat) => {
+          const active = categorie === cat.slug
+          return (
+            <Link
+              key={cat.id}
+              href={`/signes?categorie=${cat.slug}${q ? `&q=${encodeURIComponent(q)}` : ''}`}
+              role="listitem"
+              aria-current={active ? 'page' : undefined}
+              className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-bold transition"
+              style={{
+                background: active ? cat.color : 'var(--surface)',
+                color: active ? '#fff' : 'var(--ink-soft)',
+                border: `1px solid ${active ? cat.color : 'var(--border-strong)'}`,
+              }}
+            >
+              <CategoryIcon slug={cat.slug} width={18} height={18} />
+              {cat.name}
+            </Link>
+          )
+        })}
       </div>
 
-      {/* Grille de signes */}
+      {/* Grille */}
       {notes.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="text-5xl mb-4" role="img" aria-label="Rien trouvé">🔍</div>
-          <p className="text-gray-500 text-lg">Aucun signe trouvé</p>
-          <Link href="/signes" className="text-green-700 hover:underline mt-2 inline-block">
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] py-20 text-center">
+          <SearchIcon width={48} height={48} className="mx-auto text-[var(--muted)]" />
+          <p className="mt-4 text-lg font-bold text-[var(--ink)]">Aucun signe trouvé</p>
+          <p className="mt-1 text-sm font-semibold text-[var(--muted)]">
+            Essaie un autre mot ou explore les catégories.
+          </p>
+          <Link href="/signes" className="btn-secondary mt-5">
             Voir tous les signes
           </Link>
         </div>
       ) : (
-        <>
-          <p className="text-gray-500 text-sm">{notes.length} signe{notes.length > 1 ? 's' : ''}</p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            {notes.map((note) => {
-              const media = note.media[0]
-              const isVideo = media?.type === 'VIDEO'
-              return (
-                <Link
-                  key={note.id}
-                  href={`/signes/${note.slug}`}
-                  className="sign-card group"
-                  aria-label={`Signe: ${note.title}`}
-                >
-                  <div className="aspect-square bg-green-50 flex items-center justify-center overflow-hidden relative">
-                    {media ? (
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+          {notes.map((note) => {
+            const media = note.media[0]
+            const isVideo = media?.type === 'VIDEO'
+            return (
+              <Link
+                key={note.id}
+                href={`/signes/${note.slug}`}
+                className="sign-card group"
+                aria-label={`Signe : ${note.title}`}
+              >
+                <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-[var(--brand-soft)]">
+                  {media ? (
+                    isVideo ? (
                       <>
-                        {isVideo ? (
-                          <video
-                            src={media.url}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                            muted
-                            playsInline
-                            preload="metadata"
-                            aria-label={`Vidéo du signe ${note.title}`}
-                          />
-                        ) : (
-                          <img
-                            src={media.url}
-                            alt={media.alt || note.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                          />
-                        )}
-                        {isVideo && (
-                          <div className="absolute inset-0 flex items-center justify-center bg-black/10 group-hover:bg-black/20 transition-colors">
-                            <div className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow">
-                              <span className="text-green-700 text-lg" aria-hidden>▶</span>
-                            </div>
-                          </div>
-                        )}
+                        <video
+                          src={media.url}
+                          className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                          muted
+                          playsInline
+                          preload="metadata"
+                          aria-label={`Vidéo du signe ${note.title}`}
+                        />
+                        <span className="absolute inset-0 flex items-center justify-center">
+                          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/90 text-[var(--brand-700)] shadow" aria-hidden>▶</span>
+                        </span>
                       </>
                     ) : (
-                      <span className="text-5xl" role="img" aria-hidden>
-                        {note.category?.icon || '👐'}
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-3">
-                    <h2 className="font-bold text-gray-800 text-center text-sm leading-tight">{note.title}</h2>
-                    {note.category && (
-                      <div
-                        className="text-xs text-center mt-1.5 px-2 py-0.5 rounded-full mx-auto w-fit"
-                        style={{ backgroundColor: note.category.color + '20', color: note.category.color }}
-                      >
-                        {note.category.icon}
-                      </div>
-                    )}
-                  </div>
-                </Link>
-              )
-            })}
-          </div>
-        </>
+                      <img
+                        src={media.url}
+                        alt={media.alt || note.title}
+                        className="h-full w-full object-cover transition-transform group-hover:scale-105"
+                      />
+                    )
+                  ) : (
+                    <span style={{ color: note.category?.color || 'var(--brand-700)' }}>
+                      <CategoryIcon slug={note.category?.slug} width={48} height={48} />
+                    </span>
+                  )}
+                </div>
+                <div className="p-3">
+                  <h2 className="text-center text-[15px] font-extrabold leading-tight text-[var(--ink)]">
+                    {note.title}
+                  </h2>
+                  {note.category && (
+                    <p className="mt-1.5 text-center text-xs font-bold" style={{ color: note.category.color }}>
+                      {note.category.name}
+                    </p>
+                  )}
+                </div>
+              </Link>
+            )
+          })}
+        </div>
       )}
     </div>
   )

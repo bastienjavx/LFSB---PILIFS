@@ -55,6 +55,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/@prisma ./node_modules/@prisma
 
+# Dépendances requises par prisma/seed.js (Next les bundle, donc absentes du standalone)
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/slugify ./node_modules/slugify
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules/bcryptjs ./node_modules/bcryptjs
+
 # Script de démarrage
 COPY --chown=nextjs:nodejs start.sh ./start.sh
 RUN chmod +x ./start.sh

@@ -2,7 +2,8 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { NoteType } from '@prisma/client'
 import type { Metadata } from 'next'
-import { SearchIcon, HandIcon, CategoryIcon } from '@/components/icons'
+import { SearchIcon, HandIcon, CategoryGlyph } from '@/components/icons'
+import { smartSearch } from '@/lib/search'
 
 export const metadata: Metadata = { title: 'Tous les signes' }
 export const revalidate = 60
@@ -13,22 +14,13 @@ interface Props {
 
 async function getData(categorie?: string, q?: string) {
   try {
-    const [categories, notes] = await Promise.all([
+    const [categories, allNotes] = await Promise.all([
       prisma.category.findMany({ orderBy: { order: 'asc' } }),
       prisma.note.findMany({
         where: {
           published: true,
           type: NoteType.SIGN,
           ...(categorie ? { category: { slug: categorie } } : {}),
-          ...(q
-            ? {
-                OR: [
-                  { title: { contains: q, mode: 'insensitive' } },
-                  { excerpt: { contains: q, mode: 'insensitive' } },
-                  { content: { contains: q, mode: 'insensitive' } },
-                ],
-              }
-            : {}),
         },
         orderBy: { title: 'asc' },
         include: {
@@ -37,6 +29,9 @@ async function getData(categorie?: string, q?: string) {
         },
       }),
     ])
+
+    // Recherche intelligente (pertinence) côté serveur quand une requête existe.
+    const notes = q && q.trim() ? smartSearch(q, allNotes).map((h) => h.item) : allNotes
     return { categories, notes }
   } catch {
     return { categories: [], notes: [] }
@@ -55,7 +50,7 @@ export default async function SignesPage({ searchParams }: Props) {
           <h1 className="flex items-center gap-3 text-3xl font-extrabold tracking-tight text-[var(--ink)]">
             {activeCat ? (
               <span style={{ color: activeCat.color }}>
-                <CategoryIcon slug={activeCat.slug} width={34} height={34} />
+                <CategoryGlyph icon={activeCat.icon} slug={activeCat.slug} size={34} />
               </span>
             ) : (
               <HandIcon width={34} height={34} className="text-[var(--brand-700)]" />
@@ -118,7 +113,7 @@ export default async function SignesPage({ searchParams }: Props) {
                 border: `1px solid ${active ? cat.color : 'var(--border-strong)'}`,
               }}
             >
-              <CategoryIcon slug={cat.slug} width={18} height={18} />
+              <CategoryGlyph icon={cat.icon} slug={cat.slug} size={18} />
               {cat.name}
             </Link>
           )
@@ -174,7 +169,7 @@ export default async function SignesPage({ searchParams }: Props) {
                     )
                   ) : (
                     <span style={{ color: note.category?.color || 'var(--brand-700)' }}>
-                      <CategoryIcon slug={note.category?.slug} width={48} height={48} />
+                      <CategoryGlyph icon={note.category?.icon} slug={note.category?.slug} size={48} />
                     </span>
                   )}
                 </div>

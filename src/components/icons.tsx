@@ -262,3 +262,90 @@ export function CategoryIcon({ slug, ...props }: IconProps & { slug?: string }) 
   const Icon = (slug && categoryIcons[slug]) || DotsIcon
   return <Icon {...props} />
 }
+
+/* ---------- Icônes intégrées sélectionnables par l'admin ---------- */
+
+const iconByKey: Record<string, (p: IconProps) => JSX.Element> = {
+  people: PeopleIcon,
+  home: HomeIcon,
+  food: FoodIcon,
+  book: BookIcon,
+  health: HealthIcon,
+  bus: BusIcon,
+  dots: DotsIcon,
+  hand: HandIcon,
+  heart: HeartIcon,
+  info: InfoIcon,
+  globe: GlobeIcon,
+  pencil: PencilIcon,
+  video: VideoIcon,
+  question: QuestionIcon,
+  search: SearchIcon,
+  mail: MailIcon,
+  shield: ShieldIcon,
+  user: AdminIcon,
+  settings: SettingsIcon,
+  keyboard: KeyboardIcon,
+  camera: CameraIcon,
+}
+
+/** Liste pour le sélecteur d'icônes de l'admin. */
+export const ICON_OPTIONS: Array<{ key: string; label: string }> = [
+  { key: 'people', label: 'Personnes' },
+  { key: 'home', label: 'Maison' },
+  { key: 'food', label: 'Aliment' },
+  { key: 'book', label: 'Livre' },
+  { key: 'health', label: 'Santé' },
+  { key: 'bus', label: 'Bus' },
+  { key: 'hand', label: 'Main' },
+  { key: 'heart', label: 'Cœur' },
+  { key: 'globe', label: 'Monde' },
+  { key: 'pencil', label: 'Crayon' },
+  { key: 'video', label: 'Vidéo' },
+  { key: 'question', label: 'Question' },
+  { key: 'search', label: 'Loupe' },
+  { key: 'mail', label: 'Courrier' },
+  { key: 'shield', label: 'Bouclier' },
+  { key: 'user', label: 'Profil' },
+  { key: 'keyboard', label: 'Clavier' },
+  { key: 'camera', label: 'Caméra' },
+  { key: 'info', label: 'Info' },
+  { key: 'dots', label: 'Autres' },
+]
+
+/**
+ * Affiche l'icône d'une catégorie :
+ * 1. clé intégrée (`icon:people` ou `people`) → icône en trait,
+ * 2. sinon valeur non vide → emoji/texte,
+ * 3. sinon repli sur le slug, puis l'icône « autres ».
+ */
+export function CategoryGlyph({
+  icon,
+  slug,
+  size = 40,
+  className,
+}: {
+  icon?: string | null
+  slug?: string
+  size?: number
+  className?: string
+}) {
+  if (icon) {
+    const key = icon.startsWith('icon:') ? icon.slice(5) : icon
+    const Icon = iconByKey[key]
+    if (Icon) return <Icon width={size} height={size} className={className} />
+    // Valeur libre (emoji) : on l'affiche tel quel.
+    return (
+      <span
+        className={className}
+        style={{ fontSize: size * 0.82, lineHeight: 1 }}
+        role="img"
+        aria-hidden
+      >
+        {icon}
+      </span>
+    )
+  }
+  const Fallback = (slug && categoryIcons[slug]) || DotsIcon
+  return <Fallback width={size} height={size} className={className} />
+}

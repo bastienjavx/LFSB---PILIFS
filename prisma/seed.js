@@ -8,13 +8,13 @@ const prisma = new PrismaClient()
 const toSlug = (text) => slugify(text, { lower: true, strict: true, locale: 'fr' })
 
 const categories = [
-  { name: 'Personnes', slug: 'personnes', icon: '🧑‍🤝‍🧑', color: '#2563eb', order: 1 },
-  { name: 'Maison', slug: 'maison', icon: '🏠', color: '#16a34a', order: 2 },
-  { name: 'Alimentation', slug: 'alimentation', icon: '🍎', color: '#ea580c', order: 3 },
-  { name: 'Éducation', slug: 'education', icon: '📖', color: '#0d9488', order: 4 },
-  { name: 'Santé', slug: 'sante', icon: '❤️', color: '#dc2626', order: 5 },
-  { name: 'Transports', slug: 'transports', icon: '🚌', color: '#7c3aed', order: 6 },
-  { name: 'Autres catégories', slug: 'autres', icon: '⋯', color: '#1e3a8a', order: 7 },
+  { name: 'Personnes', slug: 'personnes', icon: 'icon:people', color: '#2563eb', order: 1 },
+  { name: 'Maison', slug: 'maison', icon: 'icon:home', color: '#16a34a', order: 2 },
+  { name: 'Alimentation', slug: 'alimentation', icon: 'icon:food', color: '#ea580c', order: 3 },
+  { name: 'Éducation', slug: 'education', icon: 'icon:book', color: '#0d9488', order: 4 },
+  { name: 'Santé', slug: 'sante', icon: 'icon:health', color: '#dc2626', order: 5 },
+  { name: 'Transports', slug: 'transports', icon: 'icon:bus', color: '#7c3aed', order: 6 },
+  { name: 'Autres catégories', slug: 'autres', icon: 'icon:dots', color: '#1e3a8a', order: 7 },
 ]
 
 // Anciennes catégories de démonstration à retirer (synchronisation).

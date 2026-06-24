@@ -6,7 +6,8 @@ import { NoteType } from '@prisma/client'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import type { Metadata } from 'next'
-import { CategoryIcon, HomeIcon } from '@/components/icons'
+import { CategoryGlyph, HomeIcon } from '@/components/icons'
+import { findBacklinks } from '@/lib/utils'
 
 export const revalidate = 60
 
@@ -62,6 +63,13 @@ export default async function SignePage({ params }: Props) {
       })
     : []
 
+  // Backlinks (Obsidian) : notes qui mentionnent celle-ci via [[...]].
+  const candidates = await prisma.note.findMany({
+    where: { published: true, id: { not: note.id }, content: { contains: '[[' } },
+    select: { id: true, title: true, slug: true, content: true, category: { select: { color: true, icon: true, slug: true } } },
+  })
+  const backlinks = findBacklinks(note, candidates)
+
   const parsedContent = parseObsidianLinks(note.content)
 
   return (
@@ -115,7 +123,7 @@ export default async function SignePage({ params }: Props) {
             </div>
           ) : (
             <div className="flex aspect-square items-center justify-center rounded-2xl bg-[var(--brand-soft)]" style={{ color: note.category?.color || 'var(--brand-700)' }}>
-              <CategoryIcon slug={note.category?.slug} width={96} height={96} />
+              <CategoryGlyph icon={note.category?.icon} slug={note.category?.slug} size={96} />
             </div>
           )}
 
@@ -142,7 +150,7 @@ export default async function SignePage({ params }: Props) {
               className="inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-sm font-bold"
               style={{ backgroundColor: note.category.color + '1a', color: note.category.color }}
             >
-              <CategoryIcon slug={note.category.slug} width={18} height={18} />
+              <CategoryGlyph icon={note.category.icon} slug={note.category.slug} size={18} />
               {note.category.name}
             </Link>
           )}
@@ -192,13 +200,46 @@ export default async function SignePage({ params }: Props) {
                     />
                   ) : (
                     <span style={{ color: note.category?.color || 'var(--brand-700)' }}>
-                      <CategoryIcon slug={note.category?.slug} width={32} height={32} />
+                      <CategoryGlyph icon={note.category?.icon} slug={note.category?.slug} size={32} />
                     </span>
                   )}
                 </div>
                 <div className="p-2 text-center">
                   <p className="truncate text-xs font-bold text-[var(--ink)]">{rel.title}</p>
                 </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Backlinks (façon Obsidian) */}
+      {backlinks.length > 0 && (
+        <section className="mt-12" aria-labelledby="backlinks-title">
+          <h2 id="backlinks-title" className="mb-1 text-xl font-extrabold text-[var(--ink)]">
+            Mentionné dans
+          </h2>
+          <p className="mb-4 text-sm font-semibold text-[var(--muted)]">
+            {backlinks.length} page{backlinks.length !== 1 ? 's' : ''} qui renvoie{backlinks.length !== 1 ? 'nt' : ''} vers « {note.title} ».
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {backlinks.map((bl) => (
+              <Link
+                key={bl.id}
+                href={`/signes/${bl.slug}`}
+                className="resource-card"
+                aria-label={`Voir : ${bl.title}`}
+              >
+                <span
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl"
+                  style={{ background: (bl.category?.color || '#1d4ed8') + '1a', color: bl.category?.color || 'var(--brand-700)' }}
+                >
+                  <CategoryGlyph icon={bl.category?.icon} slug={bl.category?.slug} size={22} />
+                </span>
+                <span className="min-w-0">
+                  <span className="block truncate font-extrabold text-[var(--ink)]">{bl.title}</span>
+                  <span className="block text-xs font-semibold text-[var(--brand-700)]">↩ lien vers cette page</span>
+                </span>
               </Link>
             ))}
           </div>

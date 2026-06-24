@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { normalize } from '@/lib/search'
 
 interface Category {
   id: string
@@ -55,6 +56,68 @@ export default function NoteEditor({ categories, initialNote, initialType = 'SIG
   const [media, setMedia] = useState<Media[]>(initialNote?.media || [])
   const [uploading, setUploading] = useState(false)
   const [slugManual, setSlugManual] = useState(isEdit)
+
+  // Autocomplétion des liens internes [[...]] (façon Obsidian).
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const [linkNotes, setLinkNotes] = useState<Array<{ title: string; slug: string }>>([])
+  const [linkQuery, setLinkQuery] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/api/notes')
+      .then((r) => r.json())
+      .then((data: Array<{ title: string; slug: string; id: string }>) => {
+        setLinkNotes(
+          (data || [])
+            .filter((n) => n.id !== initialNote?.id)
+            .map((n) => ({ title: n.title, slug: n.slug })),
+        )
+      })
+      .catch(() => {})
+  }, [initialNote?.id])
+
+  function detectLink(value: string, caret: number) {
+    const before = value.slice(0, caret)
+    const open = before.lastIndexOf('[[')
+    if (open === -1 || before.lastIndexOf(']]') > open) {
+      setLinkQuery(null)
+      return
+    }
+    const q = before.slice(open + 2)
+    if (/[\]\n]/.test(q)) {
+      setLinkQuery(null)
+      return
+    }
+    setLinkQuery(q)
+  }
+
+  function handleContentChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setContent(e.target.value)
+    detectLink(e.target.value, e.target.selectionStart)
+  }
+
+  function insertLink(noteTitle: string) {
+    const ta = textareaRef.current
+    if (!ta) return
+    const caret = ta.selectionStart
+    const before = content.slice(0, caret)
+    const open = before.lastIndexOf('[[')
+    if (open === -1) return
+    const newBefore = content.slice(0, open) + `[[${noteTitle}]]`
+    const newContent = newBefore + content.slice(caret)
+    setContent(newContent)
+    setLinkQuery(null)
+    requestAnimationFrame(() => {
+      ta.focus()
+      ta.setSelectionRange(newBefore.length, newBefore.length)
+    })
+  }
+
+  const linkSuggestions =
+    linkQuery !== null
+      ? linkNotes
+          .filter((n) => normalize(n.title).includes(normalize(linkQuery)))
+          .slice(0, 6)
+      : []
 
   function autoSlug(text: string) {
     return text
@@ -303,7 +366,7 @@ export default function NoteEditor({ categories, initialNote, initialType = 'SIG
         </div>
 
         {preview ? (
-          <div className="p-5 prose prose-green max-w-none min-h-[200px]">
+          <div className="p-5 prose prose-blue max-w-none min-h-[200px]">
             {content ? (
               <div dangerouslySetInnerHTML={{ __html: content.replace(/\n/g, '<br>') }} />
             ) : (
@@ -311,13 +374,44 @@ export default function NoteEditor({ categories, initialNote, initialType = 'SIG
             )}
           </div>
         ) : (
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="w-full p-5 font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-green-500 min-h-[300px]"
-            placeholder={`# Titre\n\nContenu en Markdown...\n\nSupport des liens Obsidian: [[Autre signe]]`}
-            spellCheck={false}
-          />
+          <div className="relative">
+            <textarea
+              ref={textareaRef}
+              value={content}
+              onChange={handleContentChange}
+              onKeyUp={(e) => detectLink(e.currentTarget.value, e.currentTarget.selectionStart)}
+              onClick={(e) => detectLink(e.currentTarget.value, e.currentTarget.selectionStart)}
+              onBlur={() => setTimeout(() => setLinkQuery(null), 150)}
+              className="w-full p-5 font-mono text-sm resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[300px]"
+              placeholder={`# Titre\n\nContenu en Markdown...\n\nTape [[ pour lier un autre signe (façon Obsidian)`}
+              spellCheck={false}
+            />
+
+            {/* Suggestions de liens internes */}
+            {linkQuery !== null && (
+              <div className="absolute left-4 right-4 top-14 z-20 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
+                <div className="border-b border-gray-100 bg-gray-50 px-3 py-1.5 text-xs font-bold text-gray-500">
+                  Lier une page {linkQuery ? `« ${linkQuery} »` : ''}
+                </div>
+                {linkSuggestions.length > 0 ? (
+                  linkSuggestions.map((n) => (
+                    <button
+                      key={n.slug}
+                      type="button"
+                      onMouseDown={(e) => { e.preventDefault(); insertLink(n.title) }}
+                      className="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-blue-50"
+                    >
+                      <span className="text-blue-600" aria-hidden>🔗</span>
+                      <span className="font-semibold text-gray-800">{n.title}</span>
+                      <span className="ml-auto font-mono text-xs text-gray-400">/{n.slug}</span>
+                    </button>
+                  ))
+                ) : (
+                  <div className="px-3 py-2 text-sm text-gray-400">Aucune page trouvée.</div>
+                )}
+              </div>
+            )}
+          </div>
         )}
       </div>
 

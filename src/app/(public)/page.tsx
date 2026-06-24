@@ -6,7 +6,7 @@ import {
   HandIcon,
   KeyboardIcon,
   CameraIcon,
-  CategoryIcon,
+  CategoryGlyph,
   BookIcon,
   VideoIcon,
   PencilIcon,
@@ -16,13 +16,13 @@ import {
 export const revalidate = 60
 
 const fallbackCategories = [
-  { id: 'c1', name: 'Personnes', slug: 'personnes', icon: '🧑‍🤝‍🧑', color: '#2563eb', order: 1, _count: { notes: 0 } },
-  { id: 'c2', name: 'Maison', slug: 'maison', icon: '🏠', color: '#16a34a', order: 2, _count: { notes: 0 } },
-  { id: 'c3', name: 'Alimentation', slug: 'alimentation', icon: '🍎', color: '#ea580c', order: 3, _count: { notes: 0 } },
-  { id: 'c4', name: 'Éducation', slug: 'education', icon: '📖', color: '#0d9488', order: 4, _count: { notes: 0 } },
-  { id: 'c5', name: 'Santé', slug: 'sante', icon: '❤️', color: '#dc2626', order: 5, _count: { notes: 0 } },
-  { id: 'c6', name: 'Transports', slug: 'transports', icon: '🚌', color: '#7c3aed', order: 6, _count: { notes: 0 } },
-  { id: 'c7', name: 'Autres catégories', slug: 'autres', icon: '⋯', color: '#1e3a8a', order: 7, _count: { notes: 0 } },
+  { id: 'c1', name: 'Personnes', slug: 'personnes', icon: 'icon:people', color: '#2563eb', order: 1, _count: { notes: 0 } },
+  { id: 'c2', name: 'Maison', slug: 'maison', icon: 'icon:home', color: '#16a34a', order: 2, _count: { notes: 0 } },
+  { id: 'c3', name: 'Alimentation', slug: 'alimentation', icon: 'icon:food', color: '#ea580c', order: 3, _count: { notes: 0 } },
+  { id: 'c4', name: 'Éducation', slug: 'education', icon: 'icon:book', color: '#0d9488', order: 4, _count: { notes: 0 } },
+  { id: 'c5', name: 'Santé', slug: 'sante', icon: 'icon:health', color: '#dc2626', order: 5, _count: { notes: 0 } },
+  { id: 'c6', name: 'Transports', slug: 'transports', icon: 'icon:bus', color: '#7c3aed', order: 6, _count: { notes: 0 } },
+  { id: 'c7', name: 'Autres catégories', slug: 'autres', icon: 'icon:dots', color: '#1e3a8a', order: 7, _count: { notes: 0 } },
 ]
 
 async function getHomeData() {
@@ -142,7 +142,7 @@ export default async function HomePage() {
               aria-label={`${cat.name}${cat._count.notes ? ` — ${cat._count.notes} signes` : ''}`}
             >
               <span style={{ color: cat.color }}>
-                <CategoryIcon slug={cat.slug} width={46} height={46} />
+                <CategoryGlyph icon={cat.icon} slug={cat.slug} size={46} />
               </span>
               <span className="text-[15px] font-extrabold leading-tight text-[var(--ink)]">
                 {cat.name}
